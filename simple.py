@@ -9,15 +9,16 @@ Created on Thu Sep 20 11:34:40 2018
 import numpy as np
 import etctime as etc
 import time
+import pprint
 
 '''Plant, controller and PETC implementation from Heemels et al (2013) - Periodic Event-Triggered 
 Control for Linear Systems'''
 
 # Plant
-Ap = np.array([[0, 1], [-2, 3]]);
-Bp = np.array([0, 1]);
-E = np.array([1, 0]);
-Cp = np.eye(2);
+Ap = np.array([[0, 1], [-2, 3]])
+Bp = np.array([0, 1])
+E = np.array([1, 0])
+Cp = np.eye(2)
 
 # Controller
 K = np.array([[1, -4]])
@@ -47,7 +48,19 @@ costrate = {(i, k): traffic.cost[(i, k)] / (k + 1) for i, k in traffic.cost}
 
 from abstractions import AbstractedTA
 test = AbstractedTA(traffic)
-print(test.invariants)
+pprint.pprint(test.invariants)
 
 from NTA import SigmaNTA
 sNTA = SigmaNTA(test)
+
+from ControlLoop import ControlLoop
+cl = ControlLoop(sNTA)
+
+from Network import Network
+net = Network(2,10)
+
+from NTA import NTGA
+nta = NTGA(net)
+with open("test.xml", 'w') as fw:
+    fw.write(nta.to_xml())
+print('Elapsed %.2f seconds' % (time.time() - t))

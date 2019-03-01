@@ -11,15 +11,14 @@ class Network:
     edges = set()
     actions_u = set()
     actions_c = set()
+    name = 'Network'
 
     def __init__(self, channels, delta, sync='up'):
         self.channels = range(channels)
         self.delta = delta
 
-        #self.locations = {self.int_to_name(chan, channels) for chan in range(pow(2, channels))}
         # create pyuppaal locations
         # all locations in a network are urgent
-        # locations = {self.int_to_name(chan, channels) for chan in range(pow(2, channels))}
         self.locations = {loc: pyuppaal.Location(urgent=True, name=loc, id=chan)
                           for loc, chan in [(self.int_to_name(chan, channels),chan)
                                             for chan in range(pow(2, channels))]}
@@ -27,29 +26,29 @@ class Network:
         self.clocks = {f'c{channel}' for channel in self.channels}
         self.actions_u = {f'{sync}?'}
 
-        #self.edges.update({*[edge for i in range(pow(2, channels))
         edges = {*[edge for i in range(pow(2, channels))
-                            for k in range(channels)
-                            for edge in self.create_double_edge(i, pow(2, k) | i, channels, delta)
-                            if (pow(2, k) | i) is not i]}
+                   for k in range(channels)
+                   for edge in self.create_double_edge(i, pow(2, k) | i, channels, delta)
+                   if (pow(2, k) | i) is not i]}
+
         # Add 'Bad state' and edges to bad afterwards
         self.locations.update({'Bad': pyuppaal.Location(urgent=True, name='Bad')})
 
-        edges.update({(self.int_to_name(pow(2,channels)-1,channels),
-                        True,
-                        frozenset(self.actions_u),
-                        frozenset(),
-                        frozenset(),
-                        'Bad')})
+        edges.update({(self.int_to_name(pow(2, channels)-1, channels),
+                       True,
+                       frozenset(),
+                       frozenset(self.actions_u),
+                       frozenset(),
+                       'Bad')})
         edges.update({('Bad',
-                        True,
-                        frozenset(self.actions_u),
-                        frozenset(),
-                        frozenset(),
-                        'Bad')})
+                       True,
+                       frozenset(),
+                       frozenset(self.actions_u),
+                       frozenset(),
+                       'Bad')})
         self.edges = edges
         self.transitions = self.generate_transitions()
-        self.initlocation = self.locations[self.int_to_name(0,channels)]
+        self.initlocation = self.locations[self.int_to_name(0, channels)]
 
     @staticmethod
     def int_to_name(i, n):
@@ -87,6 +86,7 @@ class Network:
         return up, down
 
     def generate_transitions(self):
+        # TODO: add controllable actions
         transitions = []
         for (source, guard, actions_c, actions_u, resets, target) in self.edges:
             props = {}
@@ -94,6 +94,7 @@ class Network:
                 props.update({'guard': str(guard).lower() if type(guard) is bool else guard})
             if actions_u:
                 props.update({'synchronisation': ','.join(actions_u)})
+                props.update({'controllable': False})
             if resets:
                 props.update({'assignment': ','.join([f'{clock}=0' for clock in resets])})
 
@@ -101,3 +102,19 @@ class Network:
                                                    self.locations[target],
                                                    **props))
         return transitions
+
+    def generate_clocks(self):
+        """ create clock declaration """
+        return f"clock {', '.join(self.clocks)};"
+
+    def generate_template(self):
+        return pyuppaal.Template(self.name,
+                                 declaration=self.generate_clocks(),
+                                 locations=[value for value in self.locations.values()],
+                                 transitions=self.transitions,
+                                 initlocation=self.initlocation)
+
+    def to_xml(self):
+        template = self.generate_template()
+        template.layout(auto_nails=True)
+        return template.to_xml()
