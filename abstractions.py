@@ -8,7 +8,7 @@ class AbstractedTA:
         self.abstraction = abstraction
         self.locations = self.transitions_to_locations(abstraction.transition)
         self.clocks = {'c'}
-        self.actions = {'*'}
+        self.actions = {}
         self.edges = self.transitions_to_edges(abstraction.transition)
         self.invariants = self.transitions_to_invariants(abstraction.transition) # map invariants to locations
 
@@ -66,13 +66,14 @@ class AbstractedTA:
         """
         assert type(interval) is tuple
         assert len(interval) == 2
+        lower, upper = interval
         guard = set() # FIXME: should this be a set, a single evaluation or a string?
-        if interval[0] == interval[1]:
+        if lower == upper:
             for clock in self.clocks:
-                guard.add('%s==%s;' % (str(interval[0]),clock))
+                guard.add('{clock}=={lower}')
         else:
             for clock in self.clocks:
-                guard.add('%s<=%s<=%s;' % (str(interval[0]),clock, str(interval[1])))
+                guard.add(f'{clock}>={lower} && {clock}<={upper}')
         return guard
 
     @staticmethod
@@ -87,7 +88,7 @@ class AbstractedTA:
         for (start, step) in transitions.keys():
             upper_bound[start] = max(upper_bound.get(start, 0), step)
         # FIXME: variable set of clocks? immutable, hashable table instead of dict?
-        invariants = {location: "c<=%s" % str(final_step) for location, final_step in upper_bound.items()}
+        invariants = {location: f"c<={final_step}" for location, final_step in upper_bound.items()}
         return invariants
 
 

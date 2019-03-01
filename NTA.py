@@ -4,14 +4,15 @@ from pyuppaal import NTA
 
 class NTGA(NTA):
     def __init__(self, *TGA, synchronisation='up'):
-        system = ''
+        system_ass = ''
+        systems = []
         for index, tga in enumerate(TGA):
-            system += f'{tga.name}{index} = {tga.name}();\n'
-            system += f'system {tga.name}{index};\n'
+            system_ass += f'{tga.name}{index} = {tga.name}();\n'
+            systems.append(f'{tga.name}{index}')
         super(NTGA, self).__init__(
             declaration=f'broadcast chan {synchronisation};',
             templates=TGA,
-            system=system
+            system=system_ass+f"system {', '.join(systems)};"
         )
 
 class SigmaNTA(TA):
@@ -40,7 +41,7 @@ class SigmaNTA(TA):
         # Base locations are urgent
         self.invariants.update({location: 'urgent' for location in self.locations})
         # Add a transition from Ri to Ri_sigma for each Ri, sigma assigning the index for sigma to s
-        self.edges.update([(location, True, f's={sigma}', frozenset(), f'{location}_s{sigma}')
+        self.edges.update([(location, True, frozenset({f's={sigma}'}), frozenset(), f'{location}_s{sigma}')
                            for location in self.locations for sigma in self.TA.keys()])
         # Add R_s locations for each sigma
         self.sigma_locations.update([f"R{location}_s{sigma}" for sigma, ta in self.TA.items() for location in ta.locations])

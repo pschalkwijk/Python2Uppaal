@@ -60,7 +60,9 @@ from Network import Network
 net = Network(2,10)
 
 from NTA import NTGA
-nta = NTGA(net)
+nta = NTGA(net, cl)
+
+
 with open("test.xml", 'w') as fw:
     fw.write(nta.to_xml())
 print('Elapsed %.2f seconds' % (time.time() - t))

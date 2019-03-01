@@ -19,11 +19,13 @@ class ControlLoop(TGA):
         self.actions_u.update(nta.actions)
         self.clocks.update(nta.clocks)
         pprint.pprint(nta.base_locations)
-        self.edges = {self.action_to_game(edge) for edge in nta.edges if edge[0] not in nta.base_locations}
+        self.edges = {self.uncontrollable(edge) if edge[0] in nta.base_locations else self.controllable(edge)
+                      for edge in nta.edges}
         self.invariants.update(nta.invariants)
 
         # create early trigger locations
-        early = {f"Ear{loc}": pyuppaal.Location(urgent=True, name=loc, id=loc) for loc in nta.base_locations}
+        early = {f"Ear{loc}": pyuppaal.Location(urgent=True, name=f"Ear{loc}", id=f"Ear{loc}")
+                 for loc in nta.base_locations}
         self.locations.update(early)
         pprint.pprint(self.locations)
         # Add urgent invariant to all early locations; Or don't; yk, we
@@ -50,7 +52,7 @@ class ControlLoop(TGA):
 
         # TODO: add sync as uncontrollable action to edges (discrete transitions only)
 
-    def action_to_game(self, edge):
+    def uncontrollable(self, edge):
         """
         Convert an edge from (l,g,a,c,l') -> (l,g,a_c,a_u,c,l')
         :param edge:
@@ -59,6 +61,14 @@ class ControlLoop(TGA):
         (start, guard, internal_action, clocks, end) = edge
         return (start, guard, internal_action, frozenset({f'{self.sync}!'}), clocks, end)
 
+    def controllable(self, edge):
+        """
+        Convert an edge from (l,g,a,c,l') -> (l,g,a_c,a_u,c,l')
+        :param edge:
+        :return:
+        """
+        (start, guard, internal_action, clocks, end) = edge
+        return (start, guard, internal_action, False, clocks, end)
 
     def generate_transitions(self):
         """ convert edges to transitions """
@@ -73,8 +83,11 @@ class ControlLoop(TGA):
             if resets:
                 props.update({'assignment': ', '.join([f'{clock}=0' for clock in resets])})
             if actions_c:
-                assignments = props.get('assignment','')
-                props.update({'assignment': f"{assignments}, {', '.join(actions_c)}"})
+                clock_assignments = props.get('assignment',False)
+                action_assignments = ', '.join([action for action in actions_c])
+                if clock_assignments:
+                    action_assignments = ', '.join([clock_assignments, action_assignments])
+                props.update({'assignment': action_assignments})
             transitions.append(pyuppaal.Transition(self.locations[source],
                                                    self.locations[target],
                                                    **props))
@@ -83,7 +96,9 @@ class ControlLoop(TGA):
     def generate_clocks(self):
         return f"clock {', '.join(self.clocks)};"
 
-
+    def generate_declarations(self):
+        return f'{self.generate_clocks()}\n' \
+               f'int {self.sigma};'
 
     def generate_template(self):
         return pyuppaal.Template(self.name,
