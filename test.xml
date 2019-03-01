@@ -1,0 +1,346 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE nta PUBLIC "-//Uppaal Team//DTD Flat System 1.1//EN" "http://www.it.uu.se/research/group/darts/uppaal/flat-1_1.dtd">
+<nta>
+  <declaration></declaration>
+    <template>
+    <name x="5" y="5">Network</name>
+    
+    <declaration></declaration>
+    
+    <location id="id0" x="-283" y="-1440">
+      <name x="-283" y="-1425">OffOffOff</name>
+      
+      
+      
+      <urgent />
+    </location>
+
+    <location id="id1" x="-285" y="-1240">
+      <name x="-285" y="-1225">OffOffOn</name>
+      
+      
+      
+      <urgent />
+    </location>
+
+    <location id="id2" x="-304" y="-426">
+      <name x="-304" y="-411">OffOnOff</name>
+      
+      
+      
+      <urgent />
+    </location>
+
+    <location id="id3" x="-280" y="-633">
+      <name x="-280" y="-618">OffOnOn</name>
+      
+      
+      
+      <urgent />
+    </location>
+
+    <location id="id4" x="-637" y="-27">
+      <name x="-637" y="-12">OnOffOff</name>
+      
+      
+      
+      <urgent />
+    </location>
+
+    <location id="id5" x="-442" y="-1041">
+      <name x="-442" y="-1026">OnOffOn</name>
+      
+      
+      
+      <urgent />
+    </location>
+
+    <location id="id6" x="-402" y="-226">
+      <name x="-402" y="-211">OnOnOff</name>
+      
+      
+      
+      <urgent />
+    </location>
+
+    <location id="id7" x="-399" y="-841">
+      <name x="-399" y="-826">OnOnOn</name>
+      
+      
+      
+      <urgent />
+    </location>
+
+    <location id="id8" x="-388" y="-633">
+      <name x="-388" y="-618">Bad</name>
+      
+      
+      
+      <urgent />
+    </location>
+    
+    <init ref="id0" />
+    
+    <transition>
+      <source ref="id5" />
+      <target ref="id7" />
+      
+      <label kind="guard" x="-397" y="-926">true</label>
+      <label kind="synchronisation" x="-397" y="-911">up?</label>
+      <label kind="assignment" x="-397" y="-896">c1=0</label>
+      
+    </transition>
+
+    <transition>
+      <source ref="id4" />
+      <target ref="id5" />
+      
+      <label kind="guard" x="-708" y="-510">true</label>
+      <label kind="synchronisation" x="-708" y="-495">up?</label>
+      <label kind="assignment" x="-708" y="-480">c0=0</label>
+      
+    </transition>
+
+    <transition>
+      <source ref="id2" />
+      <target ref="id6" />
+      
+      <label kind="guard" x="-345" y="-311">true</label>
+      <label kind="synchronisation" x="-345" y="-296">up?</label>
+      <label kind="assignment" x="-345" y="-281">c2=0</label>
+      
+    </transition>
+
+    <transition>
+      <source ref="id1" />
+      <target ref="id3" />
+      
+      <label kind="guard" x="-198" y="-926">true</label>
+      <label kind="synchronisation" x="-198" y="-911">up?</label>
+      <label kind="assignment" x="-198" y="-896">c1=0</label>
+      
+    </transition>
+
+    <transition>
+      <source ref="id0" />
+      <target ref="id4" />
+      
+      <label kind="guard" x="-772" y="-726">true</label>
+      <label kind="synchronisation" x="-772" y="-711">up?</label>
+      <label kind="assignment" x="-772" y="-696">c2=0</label>
+      
+    </transition>
+
+    <transition>
+      <source ref="id6" />
+      <target ref="id4" />
+      
+      <label kind="guard" x="-438" y="-111">c1==10</label>
+      
+      
+      
+    </transition>
+
+    <transition>
+      <source ref="id8" />
+      <target ref="id8" />
+      
+      <label kind="guard" x="-472" y="-618">true</label>
+      
+      
+      
+    </transition>
+
+    <transition>
+      <source ref="id7" />
+      <target ref="id3" />
+      
+      <label kind="guard" x="-327" y="-726">c2==10</label>
+      
+      
+      
+    </transition>
+
+    <transition>
+      <source ref="id5" />
+      <target ref="id4" />
+      
+      <label kind="guard" x="-620" y="-510">c0==10</label>
+      
+      
+      
+    </transition>
+
+    <transition>
+      <source ref="id3" />
+      <target ref="id1" />
+      
+      <label kind="guard" x="-305" y="-926">c1==10</label>
+      
+      
+      
+    </transition>
+
+    <transition>
+      <source ref="id0" />
+      <target ref="id1" />
+      
+      <label kind="guard" x="-268" y="-1325">true</label>
+      <label kind="synchronisation" x="-268" y="-1310">up?</label>
+      <label kind="assignment" x="-268" y="-1295">c0=0</label>
+      
+    </transition>
+
+    <transition>
+      <source ref="id2" />
+      <target ref="id3" />
+      
+      <label kind="guard" x="-318" y="-510">true</label>
+      <label kind="synchronisation" x="-318" y="-495">up?</label>
+      <label kind="assignment" x="-318" y="-480">c0=0</label>
+      
+    </transition>
+
+    <transition>
+      <source ref="id6" />
+      <target ref="id2" />
+      
+      <label kind="guard" x="-428" y="-311">c2==10</label>
+      
+      
+      
+    </transition>
+
+    <transition>
+      <source ref="id1" />
+      <target ref="id0" />
+      
+      <label kind="guard" x="-321" y="-1325">c0==10</label>
+      
+      
+      
+    </transition>
+
+    <transition>
+      <source ref="id1" />
+      <target ref="id5" />
+      
+      <label kind="guard" x="-352" y="-1125">true</label>
+      <label kind="synchronisation" x="-352" y="-1110">up?</label>
+      <label kind="assignment" x="-352" y="-1095">c2=0</label>
+      
+    </transition>
+
+    <transition>
+      <source ref="id6" />
+      <target ref="id7" />
+      
+      <label kind="guard" x="-525" y="-510">true</label>
+      <label kind="synchronisation" x="-525" y="-495">up?</label>
+      <label kind="assignment" x="-525" y="-480">c0=0</label>
+      
+    </transition>
+
+    <transition>
+      <source ref="id7" />
+      <target ref="id6" />
+      
+      <label kind="guard" x="-249" y="-510">c0==10</label>
+      
+      
+      
+    </transition>
+
+    <transition>
+      <source ref="id4" />
+      <target ref="id6" />
+      
+      <label kind="guard" x="-546" y="-111">true</label>
+      <label kind="synchronisation" x="-546" y="-96">up?</label>
+      <label kind="assignment" x="-546" y="-81">c1=0</label>
+      
+    </transition>
+
+    <transition>
+      <source ref="id7" />
+      <target ref="id8" />
+      
+      <label kind="guard" x="-468" y="-726">true</label>
+      
+      
+      
+    </transition>
+
+    <transition>
+      <source ref="id0" />
+      <target ref="id2" />
+      
+      <label kind="guard" x="-120" y="-926">true</label>
+      <label kind="synchronisation" x="-120" y="-911">up?</label>
+      <label kind="assignment" x="-120" y="-896">c1=0</label>
+      
+    </transition>
+
+    <transition>
+      <source ref="id3" />
+      <target ref="id7" />
+      
+      <label kind="guard" x="-411" y="-726">true</label>
+      <label kind="synchronisation" x="-411" y="-711">up?</label>
+      <label kind="assignment" x="-411" y="-696">c2=0</label>
+      
+    </transition>
+
+    <transition>
+      <source ref="id5" />
+      <target ref="id1" />
+      
+      <label kind="guard" x="-456" y="-1125">c2==10</label>
+      
+      
+      
+    </transition>
+
+    <transition>
+      <source ref="id7" />
+      <target ref="id5" />
+      
+      <label kind="guard" x="-467" y="-926">c1==10</label>
+      
+      
+      
+    </transition>
+
+    <transition>
+      <source ref="id3" />
+      <target ref="id2" />
+      
+      <label kind="guard" x="-381" y="-510">c0==10</label>
+      
+      
+      
+    </transition>
+
+    <transition>
+      <source ref="id2" />
+      <target ref="id0" />
+      
+      <label kind="guard" x="-32" y="-926">c1==10</label>
+      
+      
+      
+    </transition>
+
+    <transition>
+      <source ref="id4" />
+      <target ref="id0" />
+      
+      <label kind="guard" x="-860" y="-726">c2==10</label>
+      
+      
+      
+    </transition>
+  </template>
+
+  <system></system>
+</nta>
