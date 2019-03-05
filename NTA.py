@@ -6,12 +6,21 @@ class NTGA(NTA):
     def __init__(self, *TGA, synchronisation='up'):
         system_ass = ''
         systems = []
+        templates = []
         for index, tga in enumerate(TGA):
             system_ass += f'{tga.name}{index} = {tga.name}();\n'
             systems.append(f'{tga.name}{index}')
+            templates.append(tga.generate_template())
+            templates[-1].layout(auto_nails=True)
+            templates[-1].layout(auto_nails=True)
+            templates[-1].layout(auto_nails=True)
+            templates[-1].layout(auto_nails=True)
+            templates[-1].layout(auto_nails=True)
+            templates[-1].layout(auto_nails=True)
+            templates[-1].layout(auto_nails=True)
         super(NTGA, self).__init__(
             declaration=f'broadcast chan {synchronisation};',
-            templates=TGA,
+            templates=templates,
             system=system_ass+f"system {', '.join(systems)};"
         )
 

@@ -3,6 +3,7 @@ from TA import TGA
 import pprint
 import pyuppaal
 last_location_id = 0
+
 class Network:
     """
     Class creating a communication network
@@ -19,20 +20,25 @@ class Network:
 
         # create pyuppaal locations
         # all locations in a network are urgent
-        self.locations = {loc: pyuppaal.Location(urgent=True, name=loc, id=chan)
-                          for loc, chan in [(self.int_to_name(chan, channels),chan)
+        self.clocks = {f'c{channel}' for channel in self.channels}
+        # invariant = ' && '.join([f'{clock}<={delta}' for clock in self.clocks])
+        self.invariants = {self.int_to_name(i, channels): self.int_to_invariant(i, channels, delta)
+                           for i in range(1, pow(2, channels))}
+
+        pprint.pprint(self.invariants)
+        self.locations = {loc: pyuppaal.Location(name=loc, id=chan, invariant=self.invariants.get(loc, None))
+                          for loc, chan in [(self.int_to_name(chan, channels), chan)
                                             for chan in range(pow(2, channels))]}
 
-        self.clocks = {f'c{channel}' for channel in self.channels}
         self.actions_u = {f'{sync}?'}
 
         edges = {*[edge for i in range(pow(2, channels))
                    for k in range(channels)
-                   for edge in self.create_double_edge(i, pow(2, k) | i, channels, delta)
+                   for edge in self.create_double_edge(i, (pow(2, k) | i), channels, delta)
                    if (pow(2, k) | i) is not i]}
 
         # Add 'Bad state' and edges to bad afterwards
-        self.locations.update({'Bad': pyuppaal.Location(urgent=True, name='Bad')})
+        self.locations.update({'Bad': pyuppaal.Location(name='Bad')})
 
         edges.update({(self.int_to_name(pow(2, channels)-1, channels),
                        True,
@@ -57,11 +63,20 @@ class Network:
         where On denotes an active bit, and Off an inactive bit, including leading zeros
         i should always be smaller than pow(2,channels)
 
-        :param i: int
-        :return: str
+        :param int i: the number to convert
+        :param int n: the number of channels (bits)
+        :return str: On for 1, Off for 0
         """
         assert i < pow(2,n)
-        return ''.join(['On' if int(c) else 'Off' for c in format(i, f'0{n}b')])
+        name = ''.join(['On' if int(c) else 'Off' for c in reversed(format(i, f'0{n}b'))])
+        return name
+
+    @staticmethod
+    def int_to_invariant(i, n, delta):
+        assert i < pow(2, n)
+        invariant = ' && '.join([f'c{index}<={delta}' for index, c in enumerate(reversed(format(i, f'0{n}b'))) if int(c)])
+        print(invariant)
+        return invariant
 
     def create_double_edge(self, lower, higher, channels, delta):
         """
@@ -77,6 +92,7 @@ class Network:
         actions_u = frozenset(self.actions_u)
         actions_c = frozenset(self.actions_c)
         clock = f'c{(lower ^ higher) .bit_length() - 1}'
+        print(clock, format(lower, f'0{channels}b'), format(higher, f'0{channels}b'))
         clockset = frozenset({clock})
         # taking an extra channel into work resets clock
         up = (self.int_to_name(lower, channels),True, False, actions_u, clockset,self.int_to_name(higher, channels))

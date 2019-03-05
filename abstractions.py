@@ -68,6 +68,11 @@ class AbstractedTA:
         assert len(interval) == 2
         lower, upper = interval
         guard = set() # FIXME: should this be a set, a single evaluation or a string?
+        if lower == 0:
+            if lower == upper:
+                lower = upper = 1
+            else:
+                lower = 1
         if lower == upper:
             for clock in self.clocks:
                 guard.add('{clock}=={lower}')

@@ -19,7 +19,7 @@ class ControlLoop(TGA):
         self.actions_u.update(nta.actions)
         self.clocks.update(nta.clocks)
         pprint.pprint(nta.base_locations)
-        self.edges = {self.uncontrollable(edge) if edge[0] in nta.base_locations else self.controllable(edge)
+        self.edges = {self.uncontrollable(edge) if edge[0] not in nta.base_locations else self.controllable(edge)
                       for edge in nta.edges}
         self.invariants.update(nta.invariants)
 
@@ -43,7 +43,8 @@ class ControlLoop(TGA):
                 sigma_set.append(f" s=={sigma} ")
                 guard_map[edge] = sigma_set
 
-        self.edges.update([(Ear, '||'.join(sigmas), False, frozenset(self.actions_u), frozenset(self.clocks), Ri)
+        self.edges.update([(Ear, '||'.join(sigmas), False, frozenset(self.actions_u.union({f'{self.sync}!'})),
+                            frozenset(self.clocks), Ri)
                           for (Ear, Ri), sigmas in guard_map.items()])
 
         # TODO: Add a decent initial location

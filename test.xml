@@ -1,446 +1,287 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!DOCTYPE nta PUBLIC "-//Uppaal Team//DTD Flat System 1.1//EN" "http://www.it.uu.se/research/group/darts/uppaal/flat-1_1.dtd">
+<!DOCTYPE nta PUBLIC '-//Uppaal Team//DTD Flat System 1.1//EN' 'http://www.it.uu.se/research/group/darts/uppaal/flat-1_2.dtd'>
 <nta>
-  <declaration>broadcast chan up;</declaration>
-    <template>
-    <name x="5" y="5">Network</name>
-    
-    <declaration>clock c1, c0;</declaration>
-    
-    <location id="id0" x="-228" y="-640">
-      <name x="-228" y="-625">OffOff</name>
-      
-      
-      
-      <urgent />
-    </location>
-
-    <location id="id1" x="-139" y="-441">
-      <name x="-139" y="-426">OffOn</name>
-      
-      
-      
-      <urgent />
-    </location>
-
-    <location id="id2" x="-240" y="-34">
-      <name x="-240" y="-19">OnOff</name>
-      
-      
-      
-      <urgent />
-    </location>
-
-    <location id="id3" x="-108" y="-241">
-      <name x="-108" y="-226">OnOn</name>
-      
-      
-      
-      <urgent />
-    </location>
-
-    <location id="id4" x="-40" y="-34">
-      <name x="-40" y="-19">Bad</name>
-      
-      
-      
-      <urgent />
-    </location>
-    
-    <init ref="id0" />
-    
-    <transition>
-      <source ref="id3" />
-      <target ref="id1" />
-      
-      <label kind="guard" x="-168" y="-326">c1==10</label>
-      
-      
-      
-    </transition>
-
-    <transition controllable="false">
-      <source ref="id4" />
-      <target ref="id4" />
-      
-      <label kind="guard" x="-124" y="-19">true</label>
-      <label kind="synchronisation" x="-124" y="-4">up?</label>
-      
-      
-    <nail x="-108" y="-51" />
-
-    <nail x="-108" y="-17" />
-    </transition>
-
-    <transition>
-      <source ref="id1" />
-      <target ref="id0" />
-      
-      <label kind="guard" x="-218" y="-525">c0==10</label>
-      
-      
-      
-    </transition>
-
-    <transition controllable="false">
-      <source ref="id2" />
-      <target ref="id3" />
-      
-      <label kind="guard" x="-229" y="-126">true</label>
-      <label kind="synchronisation" x="-229" y="-111">up?</label>
-      <label kind="assignment" x="-229" y="-96">c0=0</label>
-      
-    </transition>
-
-    <transition>
-      <source ref="id2" />
-      <target ref="id0" />
-      
-      <label kind="guard" x="-348" y="-326">c1==10</label>
-      
-      
-      
-    </transition>
-
-    <transition controllable="false">
-      <source ref="id0" />
-      <target ref="id2" />
-      
-      <label kind="guard" x="-282" y="-326">true</label>
-      <label kind="synchronisation" x="-282" y="-311">up?</label>
-      <label kind="assignment" x="-282" y="-296">c1=0</label>
-      
-    </transition>
-
-    <transition controllable="false">
-      <source ref="id0" />
-      <target ref="id1" />
-      
-      <label kind="guard" x="-130" y="-525">true</label>
-      <label kind="synchronisation" x="-130" y="-510">up?</label>
-      <label kind="assignment" x="-130" y="-495">c0=0</label>
-      
-    <nail x="-87" y="-552" />
-    </transition>
-
-    <transition>
-      <source ref="id3" />
-      <target ref="id2" />
-      
-      <label kind="guard" x="-135" y="-126">c0==10</label>
-      
-      
-      
-    </transition>
-
-    <transition controllable="false">
-      <source ref="id1" />
-      <target ref="id3" />
-      
-      <label kind="guard" x="-102" y="-326">true</label>
-      <label kind="synchronisation" x="-102" y="-311">up?</label>
-      <label kind="assignment" x="-102" y="-296">c1=0</label>
-      
-    </transition>
-
-    <transition controllable="false">
-      <source ref="id3" />
-      <target ref="id4" />
-      
-      <label kind="guard" x="-58" y="-126">true</label>
-      <label kind="synchronisation" x="-58" y="-111">up?</label>
-      
-      
-    </transition>
-  </template>
-  <template>
-    <name x="5" y="5">ControlLoop</name>
-    
-    <declaration>clock c;
+	<declaration>broadcast chan up;
+clock time;</declaration>
+	<template>
+		<name x="5" y="5">Network</name>
+		<declaration>clock c1, c0;</declaration>
+		<location id="id0" x="-340" y="-646">
+			<name x="-365" y="-697">OffOff</name>
+		</location>
+		<location id="id1" x="-136" y="-408">
+			<name x="-110" y="-425">OnOff</name>
+			<label kind="invariant" x="-110" y="-410">c0&lt;=1</label>
+		</location>
+		<location id="id2" x="-544" y="-408">
+			<name x="-612" y="-416">OffOn</name>
+			<label kind="invariant" x="-612" y="-401">c1&lt;=1</label>
+		</location>
+		<location id="id3" x="-340" y="-170">
+			<name x="-323" y="-178">OnOn</name>
+			<label kind="invariant" x="-493" y="-178">c0&lt;=1 &amp;&amp; c1&lt;=1</label>
+		</location>
+		<location id="id4" x="-340" y="-68">
+			<name x="-323" y="-76">Bad</name>
+		</location>
+		<init ref="id0"/>
+		<transition>
+			<source ref="id3"/>
+			<target ref="id1"/>
+			<label kind="guard" x="-306" y="-365">c1==1</label>
+			<nail x="-272" y="-340"/>
+		</transition>
+		<transition controllable="false">
+			<source ref="id2"/>
+			<target ref="id3"/>
+			<label kind="guard" x="-561" y="-314">true</label>
+			<label kind="synchronisation" x="-561" y="-299">up?</label>
+			<label kind="assignment" x="-561" y="-284">c0=0</label>
+			<nail x="-510" y="-272"/>
+		</transition>
+		<transition>
+			<source ref="id3"/>
+			<target ref="id2"/>
+			<label kind="guard" x="-425" y="-365">c0==1</label>
+			<nail x="-408" y="-340"/>
+		</transition>
+		<transition controllable="false">
+			<source ref="id4"/>
+			<target ref="id4"/>
+			<label kind="guard" x="-348" y="34">true</label>
+			<label kind="synchronisation" x="-348" y="49">up?</label>
+			<nail x="-374" y="34"/>
+			<nail x="-306" y="34"/>
+		</transition>
+		<transition>
+			<source ref="id1"/>
+			<target ref="id0"/>
+			<label kind="guard" x="-289" y="-484">c0==1</label>
+			<nail x="-272" y="-510"/>
+		</transition>
+		<transition controllable="false">
+			<source ref="id3"/>
+			<target ref="id4"/>
+			<label kind="guard" x="-391" y="-136">true</label>
+			<label kind="synchronisation" x="-391" y="-121">up?</label>
+		</transition>
+		<transition controllable="false">
+			<source ref="id0"/>
+			<target ref="id2"/>
+			<label kind="guard" x="-544" y="-582">true</label>
+			<label kind="synchronisation" x="-544" y="-567">up?</label>
+			<label kind="assignment" x="-544" y="-552">c1=0</label>
+			<nail x="-476" y="-578"/>
+		</transition>
+		<transition>
+			<source ref="id2"/>
+			<target ref="id0"/>
+			<label kind="guard" x="-450" y="-484">c1==1</label>
+			<nail x="-408" y="-510"/>
+		</transition>
+		<transition controllable="false">
+			<source ref="id0"/>
+			<target ref="id1"/>
+			<label kind="guard" x="-170" y="-584">true</label>
+			<label kind="synchronisation" x="-170" y="-569">up?</label>
+			<label kind="assignment" x="-170" y="-554">c0=0</label>
+			<nail x="-204" y="-578"/>
+		</transition>
+		<transition controllable="false">
+			<source ref="id1"/>
+			<target ref="id3"/>
+			<label kind="guard" x="-153" y="-314">true</label>
+			<label kind="synchronisation" x="-153" y="-299">up?</label>
+			<label kind="assignment" x="-153" y="-284">c1=0</label>
+			<nail x="-170" y="-272"/>
+		</transition>
+	</template>
+	<template>
+		<name x="5" y="5">ControlLoop</name>
+		<declaration>hybrid clock c;
 int s;</declaration>
-    
-    <location id="id0" x="-282" y="-1104">
-      <name x="-282" y="-1089">R2</name>
-      
-      
-      
-      <urgent />
-    </location>
-
-    <location id="id1" x="-313" y="-445">
-      <name x="-313" y="-430">R3</name>
-      
-      
-      
-      <urgent />
-    </location>
-
-    <location id="id2" x="-129" y="-1762">
-      <name x="-129" y="-1747">R1</name>
-      
-      
-      
-      <urgent />
-    </location>
-
-    <location id="id3" x="-360" y="-883">
-      <name x="-360" y="-868">R2_s0</name>
-      <label kind="invariant" x="-360" y="-853">c&lt;=4</label>
-      
-      
-      
-    </location>
-
-    <location id="id4" x="-208" y="-225">
-      <name x="-208" y="-210">R3_s0</name>
-      <label kind="invariant" x="-208" y="-195">c&lt;=4</label>
-      
-      
-      
-    </location>
-
-    <location id="id5" x="-111" y="-1542">
-      <name x="-111" y="-1527">R1_s0</name>
-      <label kind="invariant" x="-111" y="-1512">c&lt;=4</label>
-      
-      
-      
-    </location>
-
-    <location id="id6" x="-258" y="-666">
-      <name x="-258" y="-651">EarR2</name>
-      
-      
-      
-      <urgent />
-    </location>
-
-    <location id="id7" x="-369" y="-27">
-      <name x="-369" y="-12">EarR3</name>
-      
-      
-      
-      <urgent />
-    </location>
-
-    <location id="id8" x="-285" y="-1324">
-      <name x="-285" y="-1309">EarR1</name>
-      
-      
-      
-      <urgent />
-    </location>
-    
-    <init ref="id2" />
-    
-    <transition>
-      <source ref="id3" />
-      <target ref="id2" />
-      
-      <label kind="guard" x="-632" y="-1309">c&gt;=0 &amp;&amp; c&lt;=4</label>
-      
-      <label kind="assignment" x="-632" y="-1279">c=0</label>
-      
-    <nail x="-565" y="-1718" />
-    </transition>
-
-    <transition>
-      <source ref="id8" />
-      <target ref="id2" />
-      
-      <label kind="guard" x="-341" y="-1527"> s==0 </label>
-      
-      <label kind="assignment" x="-341" y="-1497">c=0</label>
-      
-    </transition>
-
-    <transition controllable="false">
-      <source ref="id1" />
-      <target ref="id4" />
-      
-      <label kind="guard" x="-324" y="-330">true</label>
-      <label kind="synchronisation" x="-324" y="-315">up!</label>
-      <label kind="assignment" x="-324" y="-300">s=0</label>
-      
-    </transition>
-
-    <transition>
-      <source ref="id3" />
-      <target ref="id1" />
-      
-      <label kind="guard" x="-422" y="-651">c&gt;=0 &amp;&amp; c&lt;=4</label>
-      
-      <label kind="assignment" x="-422" y="-621">c=0</label>
-      
-    </transition>
-
-    <transition>
-      <source ref="id4" />
-      <target ref="id1" />
-      
-      <label kind="guard" x="-207" y="-330">c&gt;=0 &amp;&amp; c&lt;=3</label>
-      
-      <label kind="assignment" x="-207" y="-300">c=0</label>
-      
-    <nail x="-116" y="-358" />
-    </transition>
-
-    <transition>
-      <source ref="id4" />
-      <target ref="id7" />
-      
-      <label kind="guard" x="-331" y="-101">true</label>
-      
-      
-      
-    </transition>
-
-    <transition>
-      <source ref="id7" />
-      <target ref="id1" />
-      
-      <label kind="guard" x="-402" y="-210"> s==0 </label>
-      
-      <label kind="assignment" x="-402" y="-180">c=0</label>
-      
-    </transition>
-
-    <transition>
-      <source ref="id5" />
-      <target ref="id2" />
-      
-      <label kind="guard" x="-191" y="-1647">c&gt;=0 &amp;&amp; c&lt;=4</label>
-      
-      <label kind="assignment" x="-191" y="-1617">c=0</label>
-      
-    </transition>
-
-    <transition>
-      <source ref="id8" />
-      <target ref="id0" />
-      
-      <label kind="guard" x="-311" y="-1189"> s==0 </label>
-      
-      <label kind="assignment" x="-311" y="-1159">c=0</label>
-      
-    </transition>
-
-    <transition>
-      <source ref="id5" />
-      <target ref="id0" />
-      
-      <label kind="guard" x="-164" y="-1309">c&gt;=0 &amp;&amp; c&lt;=4</label>
-      
-      <label kind="assignment" x="-164" y="-1279">c=0</label>
-      
-    </transition>
-
-    <transition controllable="false">
-      <source ref="id0" />
-      <target ref="id3" />
-      
-      <label kind="guard" x="-447" y="-988">true</label>
-      <label kind="synchronisation" x="-447" y="-973">up!</label>
-      <label kind="assignment" x="-447" y="-958">s=0</label>
-      
-    <nail x="-440" y="-1015" />
-    </transition>
-
-    <transition>
-      <source ref="id3" />
-      <target ref="id6" />
-      
-      <label kind="guard" x="-315" y="-759">true</label>
-      
-      
-      
-    </transition>
-
-    <transition>
-      <source ref="id6" />
-      <target ref="id0" />
-      
-      <label kind="guard" x="-269" y="-868"> s==0 </label>
-      
-      <label kind="assignment" x="-269" y="-838">c=0</label>
-      
-    </transition>
-
-    <transition>
-      <source ref="id6" />
-      <target ref="id2" />
-      
-      <label kind="guard" x="-27" y="-1189"> s==0 </label>
-      
-      <label kind="assignment" x="-27" y="-1159">c=0</label>
-      
-    <nail x="-78" y="-1738" />
-    </transition>
-
-    <transition>
-      <source ref="id7" />
-      <target ref="id0" />
-      
-      <label kind="guard" x="-555" y="-531"> s==0 </label>
-      
-      <label kind="assignment" x="-555" y="-501">c=0</label>
-      
-    <nail x="-448" y="-1070" />
-    </transition>
-
-    <transition controllable="false">
-      <source ref="id2" />
-      <target ref="id5" />
-      
-      <label kind="guard" x="-79" y="-1647">true</label>
-      <label kind="synchronisation" x="-79" y="-1632">up!</label>
-      <label kind="assignment" x="-79" y="-1617">s=0</label>
-      
-    </transition>
-
-    <transition>
-      <source ref="id4" />
-      <target ref="id0" />
-      
-      <label kind="guard" x="-123" y="-651">c&gt;=0 &amp;&amp; c&lt;=4</label>
-      
-      <label kind="assignment" x="-123" y="-621">c=0</label>
-      
-    <nail x="-57" y="-988" />
-    </transition>
-
-    <transition>
-      <source ref="id5" />
-      <target ref="id8" />
-      
-      <label kind="guard" x="-240" y="-1418">true</label>
-      
-      
-      
-    </transition>
-
-    <transition>
-      <source ref="id3" />
-      <target ref="id0" />
-      
-      <label kind="guard" x="-344" y="-988">c&gt;=0 &amp;&amp; c&lt;=4</label>
-      
-      <label kind="assignment" x="-344" y="-958">c=0</label>
-      
-    </transition>
-
-    <transition>
-      <source ref="id6" />
-      <target ref="id1" />
-      
-      <label kind="guard" x="-303" y="-531"> s==0 </label>
-      
-      <label kind="assignment" x="-303" y="-501">c=0</label>
-      
-    </transition>
-  </template>
-
-  <system>Network0 = Network();
+		<location id="id5" x="-237" y="-1752">
+			<name x="-237" y="-1737">R1</name>
+			<urgent/>
+		</location>
+		<location id="id6" x="-306" y="-444">
+			<name x="-306" y="-429">R3</name>
+			<urgent/>
+		</location>
+		<location id="id7" x="-255" y="-1098">
+			<name x="-255" y="-1083">R2</name>
+			<urgent/>
+		</location>
+		<location id="id8" x="-315" y="-1532">
+			<name x="-315" y="-1517">R1_s0</name>
+			<label kind="invariant" x="-315" y="-1502">c&lt;=4</label>
+		</location>
+		<location id="id9" x="-201" y="-224">
+			<name x="-201" y="-209">R3_s0</name>
+			<label kind="invariant" x="-201" y="-194">c&lt;=4</label>
+		</location>
+		<location id="id10" x="-225" y="-878">
+			<name x="-225" y="-863">R2_s0</name>
+			<label kind="invariant" x="-225" y="-848">c&lt;=4</label>
+		</location>
+		<location id="id11" x="-220" y="-1316">
+			<name x="-220" y="-1301">EarR1</name>
+			<urgent/>
+		</location>
+		<location id="id12" x="-361" y="-27">
+			<name x="-361" y="-12">EarR3</name>
+			<urgent/>
+		</location>
+		<location id="id13" x="-426" y="-662">
+			<name x="-426" y="-647">EarR2</name>
+			<urgent/>
+		</location>
+		<init ref="id5"/>
+		<transition>
+			<source ref="id6"/>
+			<target ref="id9"/>
+			<label kind="guard" x="-316" y="-328">true</label>
+			<label kind="assignment" x="-316" y="-298">s=0</label>
+		</transition>
+		<transition controllable="false">
+			<source ref="id11"/>
+			<target ref="id7"/>
+			<label kind="guard" x="-266" y="-1182">s==0</label>
+			<label kind="synchronisation" x="-266" y="-1167">up!</label>
+			<label kind="assignment" x="-266" y="-1152">c=0</label>
+		</transition>
+		<transition controllable="false">
+			<source ref="id10"/>
+			<target ref="id6"/>
+			<label kind="guard" x="-305" y="-647">c&gt;=1 &amp;&amp; c&lt;=4</label>
+			<label kind="synchronisation" x="-305" y="-632">up!</label>
+			<label kind="assignment" x="-305" y="-617">c=0</label>
+		</transition>
+		<transition controllable="false">
+			<source ref="id8"/>
+			<target ref="id7"/>
+			<label kind="guard" x="-392" y="-1301">c&gt;=1 &amp;&amp; c&lt;=4</label>
+			<label kind="synchronisation" x="-392" y="-1286">up!</label>
+			<label kind="assignment" x="-392" y="-1271">c=0</label>
+		</transition>
+		<transition>
+			<source ref="id10"/>
+			<target ref="id13"/>
+			<label kind="guard" x="-373" y="-755">true</label>
+		</transition>
+		<transition controllable="false">
+			<source ref="id13"/>
+			<target ref="id6"/>
+			<label kind="guard" x="-410" y="-528">s==0</label>
+			<label kind="synchronisation" x="-410" y="-513">up!</label>
+			<label kind="assignment" x="-410" y="-498">c=0</label>
+		</transition>
+		<transition controllable="false">
+			<source ref="id10"/>
+			<target ref="id5"/>
+			<label kind="guard" x="-66" y="-1301">c&gt;=1 &amp;&amp; c&lt;=4</label>
+			<label kind="synchronisation" x="-66" y="-1286">up!</label>
+			<label kind="assignment" x="-66" y="-1271">c=0</label>
+			<nail x="0" y="-1640"/>
+		</transition>
+		<transition controllable="false">
+			<source ref="id13"/>
+			<target ref="id5"/>
+			<label kind="guard" x="-593" y="-1182">s==0</label>
+			<label kind="synchronisation" x="-593" y="-1167">up!</label>
+			<label kind="assignment" x="-593" y="-1152">c=0</label>
+			<nail x="-565" y="-1669"/>
+		</transition>
+		<transition controllable="false">
+			<source ref="id8"/>
+			<target ref="id5"/>
+			<label kind="guard" x="-299" y="-1636">c&gt;=1 &amp;&amp; c&lt;=4</label>
+			<label kind="synchronisation" x="-299" y="-1621">up!</label>
+			<label kind="assignment" x="-299" y="-1606">c=0</label>
+		</transition>
+		<transition controllable="false">
+			<source ref="id10"/>
+			<target ref="id7"/>
+			<label kind="guard" x="-312" y="-982">c&gt;=1 &amp;&amp; c&lt;=4</label>
+			<label kind="synchronisation" x="-312" y="-967">up!</label>
+			<label kind="assignment" x="-312" y="-952">c=0</label>
+		</transition>
+		<transition>
+			<source ref="id7"/>
+			<target ref="id10"/>
+			<label kind="guard" x="-205" y="-982">true</label>
+			<label kind="assignment" x="-205" y="-952">s=0</label>
+		</transition>
+		<transition>
+			<source ref="id5"/>
+			<target ref="id8"/>
+			<label kind="guard" x="-402" y="-1636">true</label>
+			<label kind="assignment" x="-402" y="-1606">s=0</label>
+			<nail x="-395" y="-1663"/>
+		</transition>
+		<transition controllable="false">
+			<source ref="id9"/>
+			<target ref="id6"/>
+			<label kind="guard" x="-200" y="-328">c&gt;=1 &amp;&amp; c&lt;=3</label>
+			<label kind="synchronisation" x="-200" y="-313">up!</label>
+			<label kind="assignment" x="-200" y="-298">c=0</label>
+			<nail x="-109" y="-356"/>
+		</transition>
+		<transition controllable="false">
+			<source ref="id13"/>
+			<target ref="id7"/>
+			<label kind="guard" x="-452" y="-863">s==0</label>
+			<label kind="synchronisation" x="-452" y="-848">up!</label>
+			<label kind="assignment" x="-452" y="-833">c=0</label>
+		</transition>
+		<transition>
+			<source ref="id8"/>
+			<target ref="id11"/>
+			<label kind="guard" x="-277" y="-1409">true</label>
+		</transition>
+		<transition>
+			<source ref="id9"/>
+			<target ref="id12"/>
+			<label kind="guard" x="-324" y="-101">true</label>
+		</transition>
+		<transition controllable="false">
+			<source ref="id11"/>
+			<target ref="id5"/>
+			<label kind="guard" x="-225" y="-1517">s==0</label>
+			<label kind="synchronisation" x="-225" y="-1502">up!</label>
+			<label kind="assignment" x="-225" y="-1487">c=0</label>
+		</transition>
+		<transition controllable="false">
+			<source ref="id9"/>
+			<target ref="id7"/>
+			<label kind="guard" x="-104" y="-647">c&gt;=1 &amp;&amp; c&lt;=4</label>
+			<label kind="synchronisation" x="-104" y="-632">up!</label>
+			<label kind="assignment" x="-104" y="-617">c=0</label>
+			<nail x="-37" y="-981"/>
+		</transition>
+		<transition controllable="false">
+			<source ref="id12"/>
+			<target ref="id7"/>
+			<label kind="guard" x="-536" y="-528">s==0</label>
+			<label kind="synchronisation" x="-536" y="-513">up!</label>
+			<label kind="assignment" x="-536" y="-498">c=0</label>
+			<nail x="-384" y="-1073"/>
+		</transition>
+		<transition controllable="false">
+			<source ref="id12"/>
+			<target ref="id6"/>
+			<label kind="guard" x="-395" y="-209">s==0</label>
+			<label kind="synchronisation" x="-395" y="-194">up!</label>
+			<label kind="assignment" x="-395" y="-179">c=0</label>
+		</transition>
+	</template>
+	<system>Network0 = Network();
 ControlLoop1 = ControlLoop();
 system Network0, ControlLoop1;</system>
+	<queries>
+		<query>
+			<formula>strategy safe = control: A&lt;&gt; time &gt;= 60 and not (Network0.Bad)</formula>
+			<comment></comment>
+		</query>
+	</queries>
 </nta>

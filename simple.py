@@ -57,7 +57,7 @@ from ControlLoop import ControlLoop
 cl = ControlLoop(sNTA)
 
 from Network import Network
-net = Network(2,10)
+net = Network(2,1)
 
 from NTA import NTGA
 nta = NTGA(net, cl)
