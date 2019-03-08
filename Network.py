@@ -75,7 +75,6 @@ class Network:
     def int_to_invariant(i, n, delta):
         assert i < pow(2, n)
         invariant = ' && '.join([f'c{index}<={delta}' for index, c in enumerate(reversed(format(i, f'0{n}b'))) if int(c)])
-        print(invariant)
         return invariant
 
     def create_double_edge(self, lower, higher, channels, delta):

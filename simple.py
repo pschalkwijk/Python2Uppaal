@@ -8,10 +8,12 @@ Created on Thu Sep 20 11:34:40 2018
 
 import numpy as np
 import etctime as etc
+from abs.abstraction import TrafficModelPETC
 import time
 import pprint
+import os
 
-'''Plant, controller and PETC implementation from Heemels et al (2013) - Periodic Event-Triggered 
+'''Plant, controller and PETC implementation from Heemels et al (2013) - Periodic Event-Triggered
 Control for Linear Systems'''
 
 # Plant
@@ -41,28 +43,29 @@ plant = etc.LinearPlant(Ap, Bp, Cp, None, E)
 controller = etc.LinearController(K, h)
 trig = etc.TabuadaPETC(plant, controller, Pl, None, sigma, 0, None, 5)
 t = time.time()
-traffic = etc.TrafficModelPETC(trig)
+# traffic = etc.TrafficModelPETC(trig)
+traffic = TrafficModelPETC(trig)
 print('Elapsed: %.2f seconds' % (time.time() - t))
 
-costrate = {(i, k): traffic.cost[(i, k)] / (k + 1) for i, k in traffic.cost}
-
-from abstractions import AbstractedTA
-test = AbstractedTA(traffic)
-pprint.pprint(test.invariants)
-
-from NTA import SigmaNTA
-sNTA = SigmaNTA(test)
-
-from ControlLoop import ControlLoop
-cl = ControlLoop(sNTA)
-
-from Network import Network
-net = Network(2,1)
-
-from NTA import NTGA
-nta = NTGA(net, cl)
-
-
-with open("test.xml", 'w') as fw:
-    fw.write(nta.to_xml())
-print('Elapsed %.2f seconds' % (time.time() - t))
+# costrate = {(i, k): traffic.cost[(i, k)] / (k + 1) for i, k in traffic.cost}
+#
+# from abstractions import AbstractedTA
+# test = AbstractedTA(traffic)
+# pprint.pprint(test.invariants)
+#
+# from NTA import SigmaNTA
+# sNTA = SigmaNTA(test)
+#
+# from ControlLoop import ControlLoop
+# cl = ControlLoop(sNTA)
+#
+# from Network import Network
+# net = Network(2,1)
+#
+# from NTA import NTGA
+# nta = NTGA(net, cl)
+#
+# with open("test.xml", 'w') as fw:
+#     fw.write(nta.to_xml())
+#
+# print('Elapsed %.2f seconds' % (time.time() - t))
