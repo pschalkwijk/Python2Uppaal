@@ -65,6 +65,7 @@ class TrafficModelPETC(TrafficModel):
         self.trigger = trigger
         self.plant = trigger.plant
         self.controller = trigger.controller
+        self.phi = None
 
         # Find the state space dimension of the plant (n <= 3), and use it to calculate
         # the number of regions we use for half the state space (q)
@@ -78,7 +79,7 @@ class TrafficModelPETC(TrafficModel):
 
         q = pow(m, n-1)
         self.l = l # number of partitions
-        self._line_search(0, 0.001, sigma_bar)
+        print(self._line_search(0, 0.001, sigma_bar))
 
     def _line_search(self, tau_min, d_tau, sigma_bar, nu=None, N_conv=5):
         """
@@ -103,27 +104,55 @@ class TrafficModelPETC(TrafficModel):
         alpha = self.trigger.sigma
 
         L = self._L(A, B, K, n, N_conv, self.l, alpha, sigma_bar)
-
+        self.L = L
         for i in range(steps):
-            tau_s = tau_min+ i*d_tau
-
-
-
-        return 1
+            tau_s = tau_min+i*d_tau
+            # try:
+            phi, max_eig = self._phi(tau_s, self.l, sigma_bar, N_conv, n, L)
+            if max_eig > 0:
+                break
+            self.phi = phi
+            tau_opt = tau_s
+        return tau_opt
 
     @staticmethod
-    def _L_sum(A, n, Nc):
-        Ai = np.eye(n)
-        M = np.zeros((Nc * n, Nc * n))
-        Mn = np.zeros((n, Nc * n))
-        f = 1
-        for k in range(Nc):
-            f *= (k + 1)
-            M += np.kron(np.eye(Nc, k=-k), Ai / f)
-            Mn[:, k * n:(k + 1) * n] = Ai / f
-            Ai = Ai @ A
+    def _phi(tau_s, l, sigma_bar, N_conv, n, L):
+        dsigma_prime = sigma_bar/l
+        i_max = int(np.floor(tau_s/dsigma_prime))
+        sigma_prime = dsigma_prime**np.arange(0, N_conv+1)
+        sigma_prime = sigma_prime.reshape(1, N_conv+1, 1, 1)
+        phi = np.zeros((i_max+1, N_conv+1, n, n))
+        for i in range(i_max):
+            phi[i, :, :, :] = (sigma_prime * L[i, :, :, :]).cumsum(axis=1)
 
-        return M @ Mn.T, Mn
+        if tau_s < sigma_bar:
+            sigma_prime = (tau_s - i_max*dsigma_prime)**np.arange(N_conv+1)
+            sigma_prime = sigma_prime.reshape(1, N_conv+1, 1, 1)
+            phi[i_max, :, :, :] = (sigma_prime * L[i_max, :, :, :]).cumsum(axis=1)
+        eig, eiv = np.linalg.eig(phi)
+        max_eig = np.amax(eig.reshape(np.prod(eig.shape)))
+
+        return phi, max_eig
+
+    @staticmethod
+    def _L_sum(a, n, Nconv):
+        Nc = Nconv - 1
+        k = np.zeros((Nc, n, n))
+        m = np.zeros((Nc, n, n))
+        b = np.eye(n) @ a
+        k[0, :, :] = np.eye(n)
+        f = 2
+        for i in range(n, Nconv):
+            m[i - n, :, :] = b / f
+            t1 = m[:i - n, :, :]
+            t2 = np.transpose(m[:i - n, :, :][::-1], (0, 2, 1))
+            L1 = (b + b.T) / f
+            k[i - 1, :, :] = (t2 @ t1).sum(axis=0) + L1
+
+            f *= i + 1
+            b = b @ a
+        m[-1,:,:] = m[-2,:,:] @ a
+        return k, m
 
     @staticmethod
     def _L(A, B, K, n, N_conv, l, alpha, sigma_bar):
@@ -131,24 +160,24 @@ class TrafficModelPETC(TrafficModel):
         def M_fun(s):
             # FIXME: distinguis between singular and not singular matrices: can't use inv on singular matrix)
             return np.matmul(invA, (expm(A*s)-np.eye(n)))
-        L = np.zeros((n*N_conv+n, n*l))
-        Lsum, Afac = TrafficModelPETC._L_sum(A, n, N_conv-1)
+        L = np.zeros((l, N_conv+1, n, n))
+        Lsum, Afac = TrafficModelPETC._L_sum(A, n, N_conv)
         dsigma_prime = sigma_bar / l
         sigma_prime = 0
         In = np.eye(n)
         abk = (A - B @ K)
         for j in range(l):
             M = M_fun(sigma_prime)
-            P1 = In @ M @ abk
+            P1 = In + M @ abk
             N = A @ M + In
             P2 = N @ abk
-            Li = np.zeros(((N_conv+1)*n, n))
-            Li[:n, :] = In - P1 - P1.T + (1 - alpha)*P1@P1.T
-            Li[n:2*n, :] = ((1 - alpha)*P1.T)@P2 + P2.T @ ((1 - alpha)*P1.T)
+            Li = np.zeros((N_conv+1, n, n))
+            Li[0, :, :] = In - P1 - P1.T + (1 - alpha)*P1.T @ P1
+            Li[1, :, :] = ((1 - alpha)*P1.T - In)@P2 + P2.T @ ((1 - alpha)*P1 - In)
             for i in range(N_conv-1):
-                Li[(i+2)*n:(i+3)*n, :] = ((1 - alpha) * P1.T) @ Afac[:n, n*i:n*(i+1)] @ P2 \
-                                        + P2.T @ Afac[:n, n*i:n*(i+1)].T @ ((1 - alpha) * P1) \
-                                        + (1 - alpha) * P2.T @ Lsum[n*i:n*(i+1), :n] @ P2
+                Li[i + 2, :, :] = ((1 - alpha) * P1.T - In) @ Afac[i, :,:] @ P2 \
+                                        + P2.T @ Afac[i, :, :].T @ ((1 - alpha) * P1 - In) \
+                                        + (1 - alpha) * P2.T @ Lsum[i, :, :] @ P2
             sigma_prime += dsigma_prime
-            L[:, j*n:(j+1)*n] = Li
+            L[j, :, :, :] = Li
         return L

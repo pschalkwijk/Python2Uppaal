@@ -13,6 +13,7 @@ import time
 import pprint
 import os
 
+np.set_printoptions(4)
 '''Plant, controller and PETC implementation from Heemels et al (2013) - Periodic Event-Triggered
 Control for Linear Systems'''
 
@@ -31,7 +32,7 @@ rho = 0.01  # decay rate
 gamma = 2   # L-2 gain
 
 # Triggering coefficient
-sigma = 0.1
+sigma = 0.05
 
 # Provided Lyapunov Matrix
 Pl = np.array([[1, .25], [.25, 1]])
