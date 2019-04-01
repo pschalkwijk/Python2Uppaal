@@ -1,34 +1,26 @@
-
-from TA import TGA
-import pprint
 import pyuppaal
-last_location_id = 0
 
-class Network:
+from timedautomata import TGA
+
+
+class Network(TGA):
     """
     Class creating a communication network
     """
-
-    edges = set()
-    actions_u = set()
-    actions_c = set()
     name = 'Network'
 
     def __init__(self, channels, delta, sync='up'):
-        self.channels = range(channels)
+        channel_range = range(channels)
         self.delta = delta
 
-        # create pyuppaal locations
         # all locations in a network are urgent
-        self.clocks = {f'c{channel}' for channel in self.channels}
+        self.clocks = {f'c{channel}' for channel in channel_range}
         # invariant = ' && '.join([f'{clock}<={delta}' for clock in self.clocks])
         self.invariants = {self.int_to_name(i, channels): self.int_to_invariant(i, channels, delta)
                            for i in range(1, pow(2, channels))}
 
-        pprint.pprint(self.invariants)
-        self.locations = {loc: pyuppaal.Location(name=loc, id=chan, invariant=self.invariants.get(loc, None))
-                          for loc, chan in [(self.int_to_name(chan, channels), chan)
-                                            for chan in range(pow(2, channels))]}
+        # pprint.pprint(self.invariants)
+        self.locations = {(self.int_to_name(chan, channels)) for chan in range(pow(2, channels))}
 
         self.actions_u = {f'{sync}?'}
 
@@ -38,7 +30,7 @@ class Network:
                    if (pow(2, k) | i) is not i]}
 
         # Add 'Bad state' and edges to bad afterwards
-        self.locations.update({'Bad': pyuppaal.Location(name='Bad')})
+        self.locations.add('Bad')
 
         edges.update({(self.int_to_name(pow(2, channels)-1, channels),
                        True,
@@ -53,8 +45,7 @@ class Network:
                        frozenset(),
                        'Bad')})
         self.edges = edges
-        self.transitions = self.generate_transitions()
-        self.initlocation = self.locations[self.int_to_name(0, channels)]
+        self.l0 = self.int_to_name(0, channels)
 
     @staticmethod
     def int_to_name(i, n):
@@ -91,7 +82,7 @@ class Network:
         actions_u = frozenset(self.actions_u)
         actions_c = frozenset(self.actions_c)
         clock = f'c{(lower ^ higher) .bit_length() - 1}'
-        print(clock, format(lower, f'0{channels}b'), format(higher, f'0{channels}b'))
+        # print(clock, format(lower, f'0{channels}b'), format(higher, f'0{channels}b'))
         clockset = frozenset({clock})
         # taking an extra channel into work resets clock
         up = (self.int_to_name(lower, channels),True, False, actions_u, clockset,self.int_to_name(higher, channels))
@@ -101,7 +92,6 @@ class Network:
         return up, down
 
     def generate_transitions(self):
-        # TODO: add controllable actions
         transitions = []
         for (source, guard, actions_c, actions_u, resets, target) in self.edges:
             props = {}
@@ -113,23 +103,12 @@ class Network:
             if resets:
                 props.update({'assignment': ','.join([f'{clock}=0' for clock in resets])})
 
-            transitions.append(pyuppaal.Transition(self.locations[source],
-                                                   self.locations[target],
+            transitions.append(pyuppaal.Transition(source,
+                                                   target,
                                                    **props))
         return transitions
 
-    def generate_clocks(self):
-        """ create clock declaration """
-        return f"clock {', '.join(self.clocks)};"
-
-    def generate_template(self):
-        return pyuppaal.Template(self.name,
-                                 declaration=self.generate_clocks(),
-                                 locations=[value for value in self.locations.values()],
-                                 transitions=self.transitions,
-                                 initlocation=self.initlocation)
-
     def to_xml(self):
-        template = self.generate_template()
+        template = self.template
         template.layout(auto_nails=True)
         return template.to_xml()

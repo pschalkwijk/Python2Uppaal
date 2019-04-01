@@ -1,16 +1,31 @@
 from itertools import groupby, count
+import scipy.io as sio
+import numpy as np
 
-from TA import TA
+from timedautomata import timed_automaton
 
 
-class AbstractedTA:
+@timed_automaton
+class TA:
+    """
+    Base function for abstracting TA's. Is decorated as a TA
+    """
     def __init__(self, abstraction):
-        self.abstraction = abstraction
-        self.locations = self.transitions_to_locations(abstraction.transition)
+        super().__init__(self)
         self.clocks = {'c'}
-        self.actions = {}
+        self.abstraction = abstraction
+        self.parse_abstraction(abstraction)
+
+    def parse_abstraction(self, abstraction):
+        pass
+
+
+class ETCTimeTA(TA):
+    def parse_abstraction(self, abstraction):
+        super().parse_abstraction(abstraction)
+        self.locations = self.transitions_to_locations(abstraction.transition)
         self.edges = self.transitions_to_edges(abstraction.transition)
-        self.invariants = self.transitions_to_invariants(abstraction.transition) # map invariants to locations
+        self.invariants = self.transitions_to_invariants(abstraction.transition)  # map invariants to locations
 
     @staticmethod
     def transitions_to_locations(transitions):
@@ -44,8 +59,11 @@ class AbstractedTA:
         :return: set
         """
         def as_range(it):
+            """
+            The PETC from etctime is modelled as such that k starts at 1, i.e. [0,2] => k=1, k=3
+            """
             l = list(it)
-            return (l[0],l[-1])
+            return (l[0]+1,l[-1]+1)
 
         edge_map = self.transitions_to_edgemap(transitions)
 
@@ -55,7 +73,8 @@ class AbstractedTA:
         for (start, end), value in edge_map.items():
             # TODO: difference between delay and discrete transitions
             intervals = [as_range(g) for _,g in groupby(value, key=lambda n, c=count(): n-next(c))]
-            edges.add(tuple(val for i in intervals for guard in self.interval_to_guard(i) for val in [start, guard, action_set, clock_set, end]))
+            edges.add(tuple(val for i in intervals for guard in self.interval_to_guard(i) for val
+                            in [start, guard, action_set, clock_set, end]))
         return edges
 
     def interval_to_guard(self, interval):
@@ -75,7 +94,7 @@ class AbstractedTA:
                 lower = 1
         if lower == upper:
             for clock in self.clocks:
-                guard.add('{clock}=={lower}')
+                guard.add(f'{clock}=={lower}')
         else:
             for clock in self.clocks:
                 guard.add(f'{clock}>={lower} && {clock}<={upper}')
@@ -97,9 +116,59 @@ class AbstractedTA:
         return invariants
 
 
-class SigmaTA(AbstractedTA):
-    def __init__(self, abstraction):
-        if isinstance(abstraction, AbstractedTA):
-            abstraction = abstraction.abstraction
-        super(SigmaTA, self).__init__(abstraction)
-        self.sigma = abstraction.trigger.sigma
+class MatlabAbstraction:
+    def __init__(self, filename, tol=0.001):
+        mat = sio.loadmat(filename, squeeze_me=True)
+        self.transitions = mat.get('Reachable_regions')
+        self.scale_factor = np.int64(1/tol)
+        lower_limits = (mat.get('Tau_s_opt')/tol).astype(np.int64)
+        upper_limits = (mat.get('Tau_s_max')/tol).astype(np.int64)
+        self.regions = np.arange(1, len(self.transitions)+1)
+        self.limits = {i: tuple([lower_limits[i-1], upper_limits[i-1]]) for i in self.regions}
+
+        class trig:
+            def __init__(self, sigma):
+                self.sigma = sigma
+        self.trigger = trig(mat.get('alpha'))
+
+
+class MatlabTA(TA):
+    def parse_abstraction(self, abstraction):
+        super().parse_abstraction(abstraction)
+        self.locations = set(abstraction.regions)
+        self.edges = self.transitions_to_edges(abstraction.transitions)
+        self.invariants = self.transitions_to_invariants(abstraction.limits)
+
+    def transitions_to_edges(self, transitions):
+        """
+        In matlab the transitions dict is the reachable set in form:
+        {start: [end1, end2, etc]}
+        :param transitions:
+        :return:
+        """
+        edges = set()
+        action_set = frozenset(self.actions)
+        clock_set = frozenset(self.clocks)
+        for index, endpoints in enumerate(transitions):
+            start = index+1
+            guard_set = self.interval_to_guard(self.abstraction.limits[start])
+            # Our guard_set only has a single guard by definition
+            guard = guard_set.pop()
+            for end in endpoints:
+                edges.add(tuple(val for val in [start, guard, action_set, clock_set, end]))
+        return edges
+
+    @staticmethod
+    def transitions_to_invariants(limits):
+        """
+        Create the mapping of invariants to locations.
+        Each location is upper bounded by the final time step found in the transition table
+        :param limits: dict
+        :return: dict
+        """
+        upper_bound = {}
+        for location, (lower, upper) in limits.items():
+            upper_bound[location] = upper
+        # FIXME: variable set of clocks? immutable, hashable table instead of dict?
+        invariants = {location: f"c<={final_step}" for location, final_step in upper_bound.items()}
+        return invariants

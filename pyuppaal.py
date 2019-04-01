@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/env python
 # vim: set fileencoding=utf-8 :
 
 """
@@ -156,13 +156,39 @@ class NTA:
             self.templates += [template]    
 
 class Template:
-    def __init__(self, name, declaration="", locations=None, initlocation=None, transitions=None, parameter=None):
+    def __init__(self, name, declaration="", locations=None, initlocation=None, transitions=iter(()), parameter=None):
         self.name = name
         self.declaration = declaration
         self.locations = locations or []
-        self.transitions = transitions or []
+        self.transitions = [self.transition_name_to_locations(trans) for trans in transitions]
+
         self.initlocation = initlocation
         self.parameter = parameter
+
+    def transition_name_to_locations(self, transition):
+        if isinstance(transition.source, Location) and isinstance(transition.target, Location):
+            return transition
+        if isinstance(transition.source, str):
+            try:
+                source = self.get_location_by_name(transition.source)
+            except AssertionError:
+                raise Exception(f'{transition.source} not found in locations')
+            transition = Transition(source, transition.target,
+                                    select=transition.select.value, guard=transition.guard.value,
+                                    synchronisation=transition.synchronisation.value,
+                                    assignment=transition.assignment.value, action=transition.action,
+                                    controllable=transition.controllable)
+        if isinstance(transition.target, str):
+            try:
+                target = self.get_location_by_name(transition.target)
+            except AssertionError:
+                raise Exception(f'{transition.target} not found in locations')
+            transition = Transition(transition.source, target,
+                                    select=transition.select.value, guard=transition.guard.value,
+                                    synchronisation=transition.synchronisation.value,
+                                    assignment=transition.assignment.value, action=transition.action,
+                                    controllable=transition.controllable)
+        return transition
 
     def assign_ids(self):
         i = 0

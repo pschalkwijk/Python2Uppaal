@@ -2,12 +2,13 @@ from TA import TGA
 import pprint
 import pyuppaal
 
+
 class ControlLoop(TGA):
     """
     Create a CL system to use with a Network as in the paper by Dieky,
     to be exported to Uppaal
     """
-    def __init__(self, nta, name='ControlLoop', initial_location='R1', sync='up'):
+    def __init__(self, nta, name='ControlLoop', initial_location='R0', sync='up'):
         self.name = name
         self.sync = sync
         # Use the sets of the nta as a base
@@ -89,7 +90,10 @@ class ControlLoop(TGA):
                 if clock_assignments:
                     action_assignments = ', '.join([clock_assignments, action_assignments])
                 props.update({'assignment': action_assignments})
-            transitions.append(pyuppaal.Transition(self.locations[source],
+            if target not in self.locations:
+                print(target)
+            else:
+                transitions.append(pyuppaal.Transition(self.locations[source],
                                                    self.locations[target],
                                                    **props))
         return transitions
