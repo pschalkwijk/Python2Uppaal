@@ -1,6 +1,6 @@
-import pyuppaal
 import shortuuid
-from timedautomata import TGA
+
+from ta import TGA, pyuppaal
 
 
 class Network(TGA):

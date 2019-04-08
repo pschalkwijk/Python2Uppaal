@@ -1,6 +1,6 @@
 from parsimonious.grammar import Grammar
 from parsimonious.nodes import NodeVisitor
-from timedautomata import network_timed_game_automata
+from .timedautomata import network_timed_game_automata
 
 TiGaGrammar = Grammar(
     r"""
@@ -9,7 +9,8 @@ TiGaGrammar = Grammar(
     in_state        = in_open locations newline? in_condition newline in_close
     in_condition    = "(" space_del_text+ ")"
     in_open         = "Initial state:" newline
-    in_close        = "Note: The 'strategy' is not guaranteed to be a strategy." newline+ ("Strategy to win:" || "Strategy to avoid losing")
+    in_close        = "Note: The 'strategy' is not guaranteed to be a strategy." newline+ in_text
+    in_text         = "Strategy to win:" / "Strategy to avoid losing"
     
     states          = state+
     state           = st_open locations delay* move*
@@ -55,7 +56,7 @@ TiGaGrammar = Grammar(
 
 
 @network_timed_game_automata
-class TiGaParser(NodeVisitor):
+class parser(NodeVisitor):
     grammar = TiGaGrammar
 
     def visit_strategy(self, node, visited_children):

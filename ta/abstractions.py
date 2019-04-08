@@ -2,7 +2,7 @@ from itertools import groupby, count
 import scipy.io as sio
 import numpy as np
 
-from timedautomata import timed_automaton
+from .timedautomata import timed_automaton
 
 
 @timed_automaton
@@ -15,7 +15,6 @@ class TA:
         self.clocks = {'c'}
         self.abstraction = abstraction
         self.parse_abstraction(abstraction)
-        print(abstraction)
 
     def parse_abstraction(self, abstraction):
         pass

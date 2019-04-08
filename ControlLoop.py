@@ -1,6 +1,6 @@
-from timedautomata import TGA
 import shortuuid
-import pyuppaal
+
+from ta import TGA, pyuppaal
 
 
 class ControlLoop(TGA):

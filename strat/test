@@ -1,0 +1,23 @@
+Initial state:
+( Network0.OffOff ControlLoop1.R1 ) ControlLoop1.s=0 
+(#time==time && time==Network0.c1 && Network0.c1==Network0.c0 && Network0.c0==ControlLoop1.c && ControlLoop1.c==0)
+Note: The 'strategy' is not guaranteed to be a strategy.
+
+Strategy to win:
+
+State: ( Network0.OffOn ControlLoop1.EarR159 ) ControlLoop1.s=0
+While you are in	(600<=time && Network0.c1<=100), wait.
+When you are in (100<=time && Network0.c1==100), take transition Network0.OffOn->Network0.OffOff { c1 == 100, tau, 1 }
+
+State: ( Network0.OffOn ControlLoop1.R117_s0 ) ControlLoop1.s=0
+While you are in	(600<=time && Network0.c1<=100 && Network0.c1==ControlLoop1.c) || (time<600 && Network0.c1-time<=-528 && Network0.c1==ControlLoop1.c) || (time<534 && time-Network0.c1<528 && Network0.c1-time<=-500 && Network0.c1==ControlLoop1.c) || (time-Network0.c1<500 && Network0.c1<100 && Network0.c1-time<=-400 && Network0.c1==ControlLoop1.c) || (time<469 && time-Network0.c1<400 && Network0.c1-time<=-379 && Network0.c1==ControlLoop1.c) || (90<Network0.c1 && time<469 && Network0.c1-time<=-369 && Network0.c1==ControlLoop1.c) || (time<446 && time-Network0.c1<379 && Network0.c1-time<=-356 && Network0.c1==ControlLoop1.c) || (90<Network0.c1 && time<446 && Network0.c1-time<=-346 && Network0.c1==ControlLoop1.c) || (time<392 && time-Network0.c1<356 && Network0.c1-time<=-302 && Network0.c1==ControlLoop1.c) || (90<Network0.c1 && time<392 && Network0.c1-time<=-292 && Network0.c1==ControlLoop1.c) || (time<350 && time-Network0.c1<302 && Network0.c1<100 && Network0.c1-time<=-100 && Network0.c1==ControlLoop1.c), wait.
+When you are in (Network0.c1==100 && 100<=ControlLoop1.c && ControlLoop1.c<=110 && ControlLoop1.c-time<=-100), take transition Network0.OffOn->Network0.OffOff { c1 == 100, tau, 1 }
+When you are in (534<=time && Network0.c1<=100 && ControlLoop1.c<=110) || (34<Network0.c1 && Network0.c1<=100 && Network0.c1-time<=-100 && ControlLoop1.c<=110), take transition ControlLoop1.R117_s0->ControlLoop1.EarR117 { true, tau, 1 }
+
+State: ( Network0.OffOn ControlLoop1.R118_s0 ) ControlLoop1.s=0
+While you are in	(600<=time && Network0.c1<=100 && Network0.c1==ControlLoop1.c) || (time<600 && Network0.c1-time<=-528 && Network0.c1==ControlLoop1.c) || (time<534 && time-Network0.c1<528 && Network0.c1-time<=-500 && Network0.c1==ControlLoop1.c) || (time-Network0.c1<500 && Network0.c1<100 && Network0.c1-time<=-400 && Network0.c1==ControlLoop1.c) || (time<469 && time-Network0.c1<400 && Network0.c1-time<=-379 && Network0.c1==ControlLoop1.c) || (90<Network0.c1 && time<469 && Network0.c1-time<=-369 && Network0.c1==ControlLoop1.c) || (time<446 && time-Network0.c1<379 && Network0.c1-time<=-356 && Network0.c1==ControlLoop1.c) || (90<Network0.c1 && time<446 && Network0.c1-time<=-346 && Network0.c1==ControlLoop1.c) || (time<392 && time-Network0.c1<356 && Network0.c1-time<=-302 && Network0.c1==ControlLoop1.c) || (90<Network0.c1 && time<392 && Network0.c1-time<=-292 && Network0.c1==ControlLoop1.c) || (time<350 && time-Network0.c1<302 && Network0.c1<100 && Network0.c1-time<=-100 && Network0.c1==ControlLoop1.c), wait.
+
+
+State: ( Network0.OffOn ControlLoop1.R119_s0 ) ControlLoop1.s=0
+When you are in (Network0.c1==100 && 100<=ControlLoop1.c && ControlLoop1.c<=110 && ControlLoop1.c-time<=-100), take transition Network0.OffOn->Network0.OffOff { c1 == 100, tau, 1 }
+When you are in (534<=time && Network0.c1<=100 && ControlLoop1.c<=110) || (34<Network0.c1 && Network0.c1<=100 && Network0.c1-time<=-100 && ControlLoop1.c<=110), take transition ControlLoop1.R117_s0->ControlLoop1.EarR117 { true, tau, 1 }

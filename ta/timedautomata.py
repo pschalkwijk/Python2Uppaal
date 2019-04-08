@@ -6,7 +6,7 @@ CLass modeling a TA following Dieky
 * a guards are created for each interval for which a transition from l -> l' is possible.
 """
 
-import pyuppaal
+from ta import pyuppaal
 import logging
 
 from functools import wraps
@@ -23,7 +23,6 @@ class ta_base:
      - A mapping (Inv -> B(C)) assigning invariants to locations
     """
     def __init__(self, *args, **kwargs):
-        print(args, self.__class__)
         self.locations = set()
         self.l0 = ""
         self.clocks = set()
@@ -77,7 +76,6 @@ def timed_automaton(cls):
             self._ta = ta_base()
             self._template_cached = False
             self._pyuppaal = pyuppaal.Template(cls.__name__)
-            print(args, cls.__name__)
             super().__init__(*args, **kwargs)
 
         def generate_declarations(self):
@@ -406,7 +404,6 @@ def network_timed_game_automata(cls):
     @game_automaton
     class NetworkTimedGameAutomata(base):
         def __init__(self, *tgas):
-            print(tgas, self.__class__)
             self._TA = TGA
             super().__init__(*tgas)
 
