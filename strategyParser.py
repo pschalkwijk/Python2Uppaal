@@ -9,7 +9,7 @@ TiGaGrammar = Grammar(
     in_state        = in_open locations newline? in_condition newline in_close
     in_condition    = "(" space_del_text+ ")"
     in_open         = "Initial state:" newline
-    in_close        = "Note: The 'strategy' is not guaranteed to be a strategy." newline+ "Strategy to win:"
+    in_close        = "Note: The 'strategy' is not guaranteed to be a strategy." newline+ ("Strategy to win:" || "Strategy to avoid losing")
     
     states          = state+
     state           = st_open locations delay* move*

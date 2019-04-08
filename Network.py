@@ -1,5 +1,5 @@
 import pyuppaal
-
+import shortuuid
 from timedautomata import TGA
 
 
@@ -7,12 +7,13 @@ class Network(TGA):
     """
     Class creating a communication network
     """
-    name = 'Network'
 
-    def __init__(self, channels, delta, sync='up'):
+    def __init__(self, channels, delta, name='Network', sync='up'):
+        super().__init__()
         channel_range = range(channels)
         self.delta = delta
-
+        self.name = name
+        self.index = shortuuid.uuid()[:6]
         # all locations in a network are urgent
         self.clocks = {f'c{channel}' for channel in channel_range}
         # invariant = ' && '.join([f'{clock}<={delta}' for clock in self.clocks])

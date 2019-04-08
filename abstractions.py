@@ -10,14 +10,38 @@ class TA:
     """
     Base function for abstracting TA's. Is decorated as a TA
     """
-    def __init__(self, abstraction):
-        super().__init__(self)
+    def __init__(self, abstraction, *args, **kwargs):
+        super().__init__(*args, **kwargs)
         self.clocks = {'c'}
         self.abstraction = abstraction
         self.parse_abstraction(abstraction)
+        print(abstraction)
 
     def parse_abstraction(self, abstraction):
         pass
+
+    def interval_to_guard(self, interval):
+        """
+        Convert an interval to a guard
+        :param interval: tuple
+        :return: string
+        """
+        assert type(interval) is tuple
+        assert len(interval) == 2
+        lower, upper = interval
+        guard = set() # FIXME: should this be a set, a single evaluation or a string?
+        if lower == 0:
+            if lower == upper:
+                lower = upper = 1
+            else:
+                lower = 1
+        if lower == upper:
+            for clock in self.clocks:
+                guard.add(f'{clock}=={lower}')
+        else:
+            for clock in self.clocks:
+                guard.add(f'{clock}>={lower} && {clock}<={upper}')
+        return guard
 
 
 class ETCTimeTA(TA):
@@ -77,28 +101,6 @@ class ETCTimeTA(TA):
                             in [start, guard, action_set, clock_set, end]))
         return edges
 
-    def interval_to_guard(self, interval):
-        """
-        Convert an interval to a guard
-        :param interval: tuple
-        :return: string
-        """
-        assert type(interval) is tuple
-        assert len(interval) == 2
-        lower, upper = interval
-        guard = set() # FIXME: should this be a set, a single evaluation or a string?
-        if lower == 0:
-            if lower == upper:
-                lower = upper = 1
-            else:
-                lower = 1
-        if lower == upper:
-            for clock in self.clocks:
-                guard.add(f'{clock}=={lower}')
-        else:
-            for clock in self.clocks:
-                guard.add(f'{clock}>={lower} && {clock}<={upper}')
-        return guard
 
     @staticmethod
     def transitions_to_invariants(transitions):

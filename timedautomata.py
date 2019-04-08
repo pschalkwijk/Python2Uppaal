@@ -22,7 +22,8 @@ class ta_base:
      - a set of edges E, where E is a subset of L x Act x B(C) x 2^C x L
      - A mapping (Inv -> B(C)) assigning invariants to locations
     """
-    def __init__(self):
+    def __init__(self, *args, **kwargs):
+        print(args, self.__class__)
         self.locations = set()
         self.l0 = ""
         self.clocks = set()
@@ -72,11 +73,12 @@ def timed_automaton(cls):
     :return:
     """
     class TimedAutomaton(cls):
-        def __init__(self):
-            super().__init__()
+        def __init__(self, *args, **kwargs):
             self._ta = ta_base()
             self._template_cached = False
             self._pyuppaal = pyuppaal.Template(cls.__name__)
+            print(args, cls.__name__)
+            super().__init__(*args, **kwargs)
 
         def generate_declarations(self):
             """
@@ -123,6 +125,11 @@ def timed_automaton(cls):
             template = pyuppaal.Template(self._pyuppaal.name, declaration=declarations, locations=locations,
                                          transitions=transitions)
             self.assign_initial_location(template)
+            try:
+                template.layout(auto_nails=True)
+            except AssertionError:
+                pass
+
             return template
 
         @property
@@ -222,38 +229,38 @@ def game_automaton(cls):
     :return:
     """
     class GameAutomaton(cls):
-        def __init__(self):
-            super().__init__()
+        def __init__(self, *args, **kwargs):
+            super().__init__(*args, **kwargs)
             self.act_c = set()
             self.act_u = set()
 
         @property
-        def actions_c(cls):
-            return cls.act_c
+        def actions_c(self):
+            return self.act_c
 
         @actions_c.setter
         @outdate_cache
-        def actions_c(cls, actions):
+        def actions_c(self, actions):
             if len(actions) is 0:
-                cls.act_c = set()
+                self.act_c = set()
             else:
-                cls.act_c.update(actions)
+                self.act_c.update(actions)
 
         @property
-        def actions_u(cls):
-            return cls.act_c
+        def actions_u(self):
+            return self.act_c
 
         @actions_u.setter
         @outdate_cache
-        def actions_u(cls, actions):
+        def actions_u(self, actions):
             if len(actions) is 0:
-                cls.act_u = set()
+                self.act_u = set()
             else:
-                cls.act_u.update(actions)
+                self.act_u.update(actions)
 
         @property
-        def actions(cls):
-            return cls.actions_c.union(cls.actions_u)
+        def actions(self):
+            return self.actions_c.union(self.actions_u)
     return GameAutomaton
 
 
@@ -279,34 +286,49 @@ def network_timed_automata(cls):
     def nta_to_ta(fn):
         def wrapper(self, properties, *args, **kwargs):
             for property in properties:
-                ta, prop = property.split(".")
+                propstring = property.split(".")
+                if len(propstring) > 1:
+                    ta, prop = propstring
+                    if ta not in self._tas.keys():
+                        self._tas[ta] = self._TA()
+                        self._tas[ta].name = ta
+                    setattr(self._tas[ta], fn.__name__, {prop})
+            return fn(self, properties, *args, **kwargs)
+        return wrapper
+
+    def nta_to_ta_dict(fn):
+        def wrapper(self, properties, *args, **kwargs):
+            for (key, value) in properties:
+                ta, prop = key.split(".")
                 if ta not in self._tas.keys():
                     self._tas[ta] = self._TA()
                     self._tas[ta].name = ta
-                setattr(self._tas[ta], fn.__name__, {prop})
-                # print(self._tas[ta])
+                setattr(self._tas[ta], fn.__name__, {prop: value})
             return fn(self, properties, *args, **kwargs)
         return wrapper
 
     class NetworkTimedAutomata(base):
-        def __init__(self):
-            super().__init__()
+        def __init__(self, *ntas, synchronisation="up", **kwargs):
+            super().__init__(*ntas, **kwargs)
             self._tas = dict()
             self._TA = TA
+            for nta in ntas:
+                self._tas[f'{nta.name}{nta.index}'] = nta
+            self.actions = {synchronisation}
 
         def generate_system(self):
             system_ass = ""
             systems = []
-            for index, ta in enumerate(self._tas.keys()):
-                system_ass += f'{ta}{index} = {ta}();\n'
-                systems .append(f'{ta}{index}')
+            for ta in self._tas.values():
+                system_ass += f'{ta.name}{ta.index} = {ta.name}();\n'
+                systems .append(f'{ta.name}{ta.index}')
             return system_ass + f"system {', '.join(systems)};"
 
         def generate_declarations(self):
             if len(self.actions) is 0:
                 return ""
             else:
-                return f'broadcast chan {", ".join(self.actions)};'
+                return f'broadcast chan {", ".join(self.actions)};\n'
 
         def create_template(self):
             return pyuppaal.NTA(templates=[ta.template for ta in self._tas.values()],
@@ -363,7 +385,7 @@ def network_timed_automata(cls):
             return base.invariants.fget(self)
 
         @invariants.setter
-        @nta_to_ta
+        @nta_to_ta_dict
         def invariants(self, invariants):
             base.invariants.fset(self, invariants)
 
@@ -383,9 +405,10 @@ def network_timed_game_automata(cls):
 
     @game_automaton
     class NetworkTimedGameAutomata(base):
-        def __init__(self):
-            super().__init__()
+        def __init__(self, *tgas):
+            print(tgas, self.__class__)
             self._TA = TGA
+            super().__init__(*tgas)
 
     return NetworkTimedGameAutomata
 
@@ -402,7 +425,11 @@ class TGA:
 
 @network_timed_automata
 class NTA:
-    pass
+    def __init__(self, *args, **kwargs):
+        pass
+
+    def to_xml(self):
+        return self.template.to_xml()
 
 
 @network_timed_game_automata
