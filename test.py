@@ -1,11 +1,11 @@
-import sympy
-from sympy.matrices.expressions.blockmatrix import block_collapse
-from sympy.matrices.expressions.matexpr import matrix_symbols
-from sympy.utilities.autowrap import ufuncify
+#import sympy
+#from sympy.matrices.expressions.blockmatrix import block_collapse
+#from sympy.matrices.expressions.matexpr import matrix_symbols
+#from sympy.utilities.autowrap import ufuncify
 
 import numpy as np
 import time
-from numba import jit
+#from numba import jit
 
 # @jit
 
