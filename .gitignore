@@ -3,3 +3,7 @@
 
 # Don't include the dot library that refuses to be found by pycharm python console
 dot
+
+# Don't include xml and query files
+*.xml
+*.q
