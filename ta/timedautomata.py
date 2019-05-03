@@ -123,10 +123,10 @@ def timed_automaton(cls):
             template = pyuppaal.Template(self._pyuppaal.name, declaration=declarations, locations=locations,
                                          transitions=transitions)
             self.assign_initial_location(template)
-            try:
-                template.layout(auto_nails=True)
-            except AssertionError:
-                pass
+            # try:
+                # template.layout(auto_nails=True)
+            # except AssertionError:
+            #     pass
 
             return template
 

@@ -36,13 +36,13 @@ class Network(TGA):
         edges.update({(self.int_to_name(pow(2, channels)-1, channels),
                        True,
                        frozenset(),
-                       frozenset(self.actions_u),
+                       frozenset(self.act_u),
                        frozenset(),
                        'Bad')})
         edges.update({('Bad',
                        True,
                        frozenset(),
-                       frozenset(self.actions_u),
+                       frozenset(self.act_u),
                        frozenset(),
                        'Bad')})
         self.edges = edges
@@ -80,8 +80,8 @@ class Network(TGA):
         """
         # freeze sets for hashing
         empty = frozenset()
-        actions_u = frozenset(self.actions_u)
-        actions_c = frozenset(self.actions_c)
+        actions_u = frozenset(self.act_u)
+        actions_c = frozenset(self.act_c)
         clock = f'c{(lower ^ higher) .bit_length() - 1}'
         # print(clock, format(lower, f'0{channels}b'), format(higher, f'0{channels}b'))
         clockset = frozenset({clock})
@@ -89,7 +89,7 @@ class Network(TGA):
         up = (self.int_to_name(lower, channels),True, False, actions_u, clockset,self.int_to_name(higher, channels))
         # channel is released if clock equals delta, no clock resets or actions
         # TODO: keep delta a variable?
-        down = (self.int_to_name(higher, channels),f'{clock}=={delta}',True,False,empty, self.int_to_name(lower, channels))
+        down = (self.int_to_name(higher, channels), f'{clock}=={delta}', True, False, empty, self.int_to_name(lower, channels))
         return up, down
 
     def generate_transitions(self):
@@ -111,5 +111,5 @@ class Network(TGA):
 
     def to_xml(self):
         template = self.template
-        template.layout(auto_nails=True)
+        # template.layout(auto_nails=True)
         return template.to_xml()

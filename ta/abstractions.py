@@ -120,12 +120,14 @@ class ETCTimeTA(TA):
 class MatlabAbstraction:
     def __init__(self, filename, tol=0.001):
         mat = sio.loadmat(filename, squeeze_me=True)
-        self.transitions = mat.get('Reachable_regions')
+        self.transitions = mat.get('Reachable_regions_regDetQ')
         self.scale_factor = np.int64(1/tol)
         lower_limits = (mat.get('Tau_s_opt')/tol).astype(np.int64)
         upper_limits = (mat.get('Tau_s_max')/tol).astype(np.int64)
+        print(len(self.transitions))
         self.regions = np.arange(1, len(self.transitions)+1)
-        self.limits = {i: tuple([lower_limits[i-1], upper_limits[i-1]]) for i in self.regions}
+        self.limits = {i: tuple([lower_limits[(i % int(len(self.transitions)/2))-1], upper_limits[(i % int(len(self.transitions)/2))-1]])
+                       for i in self.regions}
 
         class trig:
             def __init__(self, sigma):
@@ -155,8 +157,11 @@ class MatlabTA(TA):
             guard_set = self.interval_to_guard(self.abstraction.limits[start])
             # Our guard_set only has a single guard by definition
             guard = guard_set.pop()
-            for end in endpoints:
-                edges.add(tuple(val for val in [start, guard, action_set, clock_set, end]))
+            if isinstance(endpoints, np.ndarray):
+                for end in endpoints:
+                    edges.add(tuple(val for val in [start, guard, action_set, clock_set, end]))
+            else:
+                edges.add(tuple(val for val in [start, guard, action_set, clock_set, endpoints]))
         return edges
 
     @staticmethod

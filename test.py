@@ -4,7 +4,7 @@ import shortuuid
 import subprocess
 
 # location of your uppaal installation
-VERIFYTA = "/media/sf_Code/uppaal64-4.1.20-stratego-5/bin-Linux/verifyta.sh"
+VERIFYTA = "/home/pschalkwijk/Documents/uppaal/bin-Linux/verifyta.sh"
 
 # system matrices, not yet used
 a = np.array([[0,1],[-2,3]])
@@ -13,22 +13,27 @@ b = np.array([[0],[1]])
 t = time.time()
 
 from ta import MatlabAbstraction, MatlabTA
-HWC = MatlabAbstraction('data/HWC_Q_M4.mat')
-ST = MatlabAbstraction('data/STEERING_Q_M4.mat')
-mTA_HWC = MatlabTA(HWC)
-mTA_ST = MatlabTA(ST)
+CL1_M_20 = MatlabAbstraction('data/CL1_M_20.mat')
+CL2_M_20 = MatlabAbstraction('data/CL2_M_20.mat')
+mTA_CL1 = MatlabTA(CL1_M_20)
+mTA_CL2 = MatlabTA(CL2_M_20)
 
 from ControlLoop import ControlLoop
-cl1 = ControlLoop(mTA_HWC, name="cl1")
-cl2 = ControlLoop(mTA_ST, name="cl2")
+loops = []
+for i in range(2):
+    loops.append(ControlLoop(mTA_CL1, f'cl{i}'))
+
+for i in range(2):
+    loops.append(ControlLoop(mTA_CL2, f'cl{2+i}'))
 #
 from Network import Network
-net = Network(1, 5) # the network is 0.005/0.001 seconds active
+net = Network(1, 1) # the network is 0.005/0.001 seconds active
+loops.append(net)
 
 # NOTE: To be more specific, this could be described with a NTGA.
 # Uppaal doesn't care as long as edges are marked controllable or uncontrollable.
 from ta import NTA
-ntga = NTA(cl1, cl2, net)
+ntga = NTA(*loops)
 
 from datetime import datetime
 filename = f'ntga_{datetime.now()}'
@@ -40,7 +45,8 @@ with open(f'queries/{filename}.q', 'w') as file:
     file.write(f"strategy {strategy_name} = control: A[] not ({net.name}{net.index}.Bad)")
 
 
-arg_list = [VERIFYTA, '-t', '0', '--print-strategies', 'strat', f'xml/{filename}.xml', f'queries/{filename}.q']
+arg_list = [VERIFYTA, '-u','-s','--print-strategies','strat', f'xml/{filename}.xml', f'queries/{filename}.q']
+print(' '.join(arg_list))
 verify_ta = subprocess.run(arg_list, stdout=subprocess.PIPE)
 print(verify_ta.stdout.decode('utf-8'))
 print(f"strategy written to strat/{strategy_name}")

@@ -26,6 +26,7 @@ class ControlLoop(TGA):
         self.actions_u.update(nta.actions)
         self.clocks.update(nta.clocks)
         self.edges = {self.uncontrollable(edge) for edge in nta.edges}
+        self.edges.update({self.early(edge) for edge in nta.edges})
         self.invariants.update(nta.invariants)
 
         # TODO: create inital location
@@ -39,7 +40,7 @@ class ControlLoop(TGA):
         # Add edge from Ri to Eari
         # TODO: add guard from MIET to tau_min (use tolerance better)
         self.edges.update([(f'R{location}', f'{nta.abstraction.limits[location][0]-5}>=c &&'
-                                            f' {nta.abstraction.limits[location][0]} <= c', False, False, frozenset(),
+                                            f'5 <= c', False, False, frozenset(),
                             f'Ear{location}')
                            for location in nta.locations])
         # self.sigma = 's'
@@ -58,6 +59,15 @@ class ControlLoop(TGA):
         # TODO: Add a decent initial location
         self.l0 = initial_location
 
+
+    def early(self, edge):
+        """
+        Convert an edge from (l,g,a,c,l') -> (Ear(l),g,a_c,a_u,c,l')
+        :param edge:
+        :return:
+        """
+        (start, guard, internal_action, clocks, end) = edge
+        return f'Ear{start}', guard, internal_action, frozenset({f'{self.sync}!'}), clocks, f'R{end}'
 
     def uncontrollable(self, edge):
         """
@@ -121,5 +131,5 @@ class ControlLoop(TGA):
 
     def to_xml(self):
         template = self.template
-        template.layout(auto_nails=True)
+        # template.layout(auto_nails=True)
         return template.to_xml()

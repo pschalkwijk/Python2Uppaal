@@ -210,6 +210,7 @@ ReachableSets = cell(q,1);
 Reachable_regions = cell(q,1);          % To store reachable region (numbering according to Polyhedra) 
 Reachable_regions_regDetQ = cell(q,1);  % To store reachable region (numbering according to reg_Det_Q)
 Region_intersections = cell(q,q);
+has_region_intersected = zeros(q,q);
 %global p
 p = 1;
 D = parallel.pool.DataQueue;
@@ -236,6 +237,9 @@ N_max = ceil(tau_max/Ts);              % Number of steps for the upper sampling 
         R = sys.reachableSet('X',R0,'N',1,'direction','forward');   % Compute reachable set
             
         for j = 1:q     % Loop on regions
+            if (has_region_intersected(i,j) == 1)
+                continue
+            end
             intersection = intersect(R, 100*Polyhedra{j,1});     % Find intersection between R (reachable set) and j-th region polyhedron
             Region_intersections{i,j} = intersection;
                 
@@ -244,7 +248,7 @@ N_max = ceil(tau_max/Ts);              % Number of steps for the upper sampling 
                 % Region transitions with region numbering according to
                 % polyhedra numbering
                 Reachable_regions{i,1} = [Reachable_regions{i,1}, j];       % ... add j-th region to reachable regions of region i
-
+                has_region_intersected(i,j) = 1;
                 % Region transitions with region numbering according to
                 % reg_det_Q!!!
 %                 Reachable_regions_regDetQ{poly_regions(i),1} = [Reachable_regions_regDetQ{poly_regions(i),1}, poly_regions(j)];
@@ -255,7 +259,7 @@ N_max = ceil(tau_max/Ts);              % Number of steps for the upper sampling 
                 % Region transitions with region numbering according to
                 % polyhedra numbering
                 Reachable_regions{i,1} = [Reachable_regions{i,1}, j];       % ... add j-th region to reachable regions of region i
-
+                has_region_intersected(i,j) = 1;
                 % Region transitions with region numbering according to
                 % reg_det_Q!!!
 %                 Reachable_regions_regDetQ{poly_regions(i),1} = [Reachable_regions_regDetQ{poly_regions(i),1}, poly_regions(j)];

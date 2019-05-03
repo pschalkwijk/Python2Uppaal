@@ -19,9 +19,9 @@ gcp();
 
 %% Define Control System for Abstraction
 % Control loop 1 from Dieky
-A = [-0.5 0; 0 3.5];
-B = [1;1];
-K = [1.02, -5.62];
+A = [0 1; 2 -3];
+B = [0;1];
+K = [1, -4];
 % Closed-loop: x_dot = Ax + Bu = Ax - BKx_k
 %% Abstraction Parameters
 n = length(A(:,1));   % State space dimension
@@ -32,7 +32,7 @@ sigma_bar = 1;        % Upper limit for sampling time global lower bound (used i
 l = 100;              % Number of subdivisions in the interval [0,sigma_bar]
 
 % m must be an even number
-m = 200;               % Number of considered subdivisions for the angle(s) theta (ranging from 0 to pi), must be an even number! 
+m = 20;               % Number of considered subdivisions for the angle(s) theta (ranging from 0 to pi), must be an even number! 
 q = m^(n-1);         % Number of regions (for half the state space)
 
 alpha = 0.05;        % Triggering co�fficient
@@ -146,7 +146,7 @@ fprintf('finished upper bounds after %02.0f:%02.0f:%02.0f\n', [floor(ctime/3600)
 % Give time that the inter-sample time bound calculations took to complete in seconds
 fprintf('finished reachability analysis after %02.0f:%02.0f:%02.0f\n', [floor(ctime/3600), floor(mod(ctime, 3600)/60), round(mod(ctime, 60))]);
 
-save(['Dieky1_',datestr(now)])
+save(['Dieky1_',datestr(now,"dd/mm/yyyy")])
 % Run simulation
 % fig_Sim_Q_etc
 
