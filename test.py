@@ -48,5 +48,9 @@ with open(f'queries/{filename}.q', 'w') as file:
 arg_list = [VERIFYTA, '-u','-s','--print-strategies','strat', f'xml/{filename}.xml', f'queries/{filename}.q']
 print(' '.join(arg_list))
 verify_ta = subprocess.run(arg_list, stdout=subprocess.PIPE)
-print(verify_ta.stdout.decode('utf-8'))
 print(f"strategy written to strat/{strategy_name}")
+result = verify_ta.stdout.decode('utf-8')
+with open(f'results/{filename}.txt', 'w') as file:
+    file.write(result)
+print(result)
+print(f"strategy written to results/{filename}.txt")
