@@ -100,10 +100,9 @@ class Network(TGA):
                 props.update({'guard': str(guard).lower() if type(guard) is bool else guard})
             if actions_u:
                 props.update({'synchronisation': ','.join(actions_u)})
-                props.update({'controllable': False})
             if resets:
                 props.update({'assignment': ','.join([f'{clock}=0' for clock in resets])})
-
+            props.update({'controllable': False})
             transitions.append(pyuppaal.Transition(source,
                                                    target,
                                                    **props))
@@ -111,5 +110,6 @@ class Network(TGA):
 
     def to_xml(self):
         template = self.template
-        # template.layout(auto_nails=True)
+        template.layout(auto_nails=True)
+        print("layed out")
         return template.to_xml()

@@ -131,5 +131,5 @@ class ControlLoop(TGA):
 
     def to_xml(self):
         template = self.template
-        # template.layout(auto_nails=True)
+        template.layout(auto_nails=True)
         return template.to_xml()
