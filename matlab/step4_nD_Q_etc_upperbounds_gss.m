@@ -16,7 +16,7 @@ function Tau_s_max = step4_nD_Q_etc_upperbounds_gss(m, l_star, N_conv, alpha, ..
                                             AllRegions, Q, sigma_max, nu, eps, tol)
     q = m^(n-1); 
     % Note: here l could be changed into l_star for better accuracy
-    LL = LL_fun_etc(sigma_max,l_star,N_conv,alpha,A,B,K);  
+    LL = LL_fun_etc(2*sigma_max,l_star,N_conv,alpha,A,B,K);  
     
     ops = sdpsettings('solver','sedumi','sedumi.eps',eps,...
         'sedumi.maxiter',100,'verbose',0, 'cachesolvers', 1);

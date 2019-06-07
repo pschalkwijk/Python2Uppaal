@@ -25,7 +25,7 @@ function feas = feasibility_lower_bound(tau, l, sigma, N, n, L, Q, region, ops, 
 %     feas = feas + solution.problem;
 % end
 % Region increment
-Phi = Phi_fun_etc(tau,l,sigma,N,L);
+Phi = Phi_fun_etc(tau,l,4*sigma,N,L);
 %         clear con_break
 con_break = 0;                        % Loop break condition
 if f==1

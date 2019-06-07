@@ -314,6 +314,7 @@ def network_timed_automata(cls):
                 self._tas[f'{nta.name}{nta.index}'] = nta
             self.actions = {synchronisation}
 
+
         def generate_system(self):
             system_ass = ""
             systems = []

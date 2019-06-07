@@ -124,7 +124,6 @@ class MatlabAbstraction:
         self.scale_factor = np.int64(1/tol)
         lower_limits = (mat.get('Tau_s_opt')/tol).astype(np.int64)
         upper_limits = (mat.get('Tau_s_max')/tol).astype(np.int64)
-        print(len(self.transitions))
         self.regions = np.arange(1, len(self.transitions)+1)
         self.limits = {i: tuple([lower_limits[(i % int(len(self.transitions)/2))-1], upper_limits[(i % int(len(self.transitions)/2))-1]])
                        for i in self.regions}

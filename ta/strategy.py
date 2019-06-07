@@ -1,24 +1,27 @@
 from parsimonious.grammar import Grammar
 from parsimonious.nodes import NodeVisitor
-from .timedautomata import network_timed_game_automata
+from .timedautomata import network_timed_automata
 
 TiGaGrammar = Grammar(
     r"""
     strategy        = in_state states newline
     
     in_state        = in_open locations newline? in_condition newline in_close
-    in_condition    = "(" space_del_text+ ")"
+    in_condition    = "(#" space_del_text+ ")"
     in_open         = "Initial state:" newline
     in_close        = "Note: The 'strategy' is not guaranteed to be a strategy." newline+ in_text
-    in_text         = "Strategy to win:" / "Strategy to avoid losing"
+    in_text         = "Strategy to win:" / "Strategy to avoid losing:"
     
     states          = state+
-    state           = st_open locations delay* move*
+    state           = st_open locations action
     st_open         = newline+ "State:" ws*
+    action          = (move / delay)+
     
-    location        =  ws text+
+    globals         = var+ newline?
+    var             = char+ "=" char+ ws
+    location        = ws text+
     loc_addendum    = ws* text* ws*
-    locations       = "(" location+ ws ")" loc_addendum
+    locations       = "(" location+ ws ") " globals+
     
     delays          = delay+
     delay           = newline* del_open invariants del_close
@@ -27,7 +30,7 @@ TiGaGrammar = Grammar(
     
     moves           = move+
     move            = newline* mv_open invariants mv_close transition
-    mv_open         = "When you are in" ws
+    mv_open         = "When you are in "
     mv_close        = ","
        
     transition      = tr_open trans conditions
@@ -50,12 +53,13 @@ TiGaGrammar = Grammar(
     ws              = ~"\s*"i
     newline         = ~"\n*"
     text            = ~"[A-z0-9.&=><:#']*"i
+    char            = ~"[A-z0-9]*"i
     space_del_text  = ws* text+
     """
 )
 
 
-@network_timed_game_automata
+@network_timed_automata
 class parser(NodeVisitor):
     grammar = TiGaGrammar
 
@@ -68,7 +72,7 @@ class parser(NodeVisitor):
         :return:
         """
         in_state, states, newline = visited_children
-        return self.nta
+        return self
 
     def visit_state(self, node, visited_children):
         """
@@ -77,15 +81,33 @@ class parser(NodeVisitor):
         :param visited_children:
         :return:
         """
-        st_open, locations, delays, moves = visited_children
+        st_open, locations, action = visited_children
         self.locations.add(locations)
+        delays, moves = action
         self.invariants.update({locations: delays})
         for move in moves:
             source, guards, target = move
-            print(source, guards, target)
-        #add edges, (start, end,
+            self.edges.update([(source, frozenset(guards), False, frozenset(), target)])
+        # add edges, (start, end,
         # state = {name: child for (name, child) in visited_children if child}
         return {"state": locations}
+
+    def visit_action(self, node, visited_children):
+        """
+        action = (move / delay)
+        :param node:
+        :param visited_children:
+        :return:
+        """
+        delays = []
+        moves = []
+        for index, action in enumerate(node.children):
+            for counter, child in enumerate(action.children):
+                if child.expr_name == 'move' and len(visited_children[index][counter]) > 0:
+                    moves.append(visited_children[index][counter])
+                elif child.expr_name == 'delay'and len(visited_children[index][counter]) > 0:
+                    delays.append(visited_children[index][counter])
+        return delays, moves
 
     def visit_location(self, node, visited_children):
         """

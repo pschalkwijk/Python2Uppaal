@@ -55,7 +55,7 @@ for t in range(10):
     with open(f'queries/{strategy_name}.q', 'w') as file:
         file.write(f"strategy {strategy_name} = control: A[] not ({net.name}{net.index}.Bad)")
 
-    arg_list = [VERIFYTA, '-u','-s','--generate-strategy','2','--print-strategies','strat', f'xml/{strategy_name}.xml', f'queries/{strategy_name}.q']
+    arg_list = [VERIFYTA, '-u','-s','--generate-strategy','1','--print-strategies','strat', f'xml/{strategy_name}.xml', f'queries/{strategy_name}.q']
     print(' '.join(arg_list))
     verify_ta = subprocess.run(arg_list, stdout=subprocess.PIPE)
     result = verify_ta.stdout.decode('utf-8')

@@ -280,7 +280,7 @@ send(D,i);
 end
 %% convert polyhydra regions to regDetQ regions
 for i = 1:q
-    Reachable_regions_regDetQ{poly_regions(i),1} = arrayfunc(@(j) poly_regions(j), Reachable_regions{i,1});
+    Reachable_regions_regDetQ{poly_regions(i),1} = arrayfun(@(j) poly_regions(j), Reachable_regions{i,1});
 end
 
 

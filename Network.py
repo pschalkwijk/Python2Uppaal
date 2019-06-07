@@ -110,6 +110,5 @@ class Network(TGA):
 
     def to_xml(self):
         template = self.template
-        template.layout(auto_nails=True)
-        print("layed out")
+        # template.layout(auto_nails=True)
         return template.to_xml()
