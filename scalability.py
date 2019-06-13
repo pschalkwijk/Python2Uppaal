@@ -9,46 +9,51 @@ VERIFYTA = "/home/pschalkwijk/Documents/uppaal/bin-Linux/verifyta.sh"
 
 # Starting with a number sometimes causes Uppaal to crash, so we use letters only
 shortuuid.set_alphabet("ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz")
+ntgas = []
+for i in range(10):
+    """
+    Abstractions
+    """
+    from ta import MatlabAbstraction, MatlabTA
+
+    # Import the abstractions made in matlab and parse into a timed automaton
+    CL1 = MatlabAbstraction(f'data/CL1_M_{20*(i+1)}.mat')
+    CL2 = MatlabAbstraction(f'data/CL2_M_{20*(i+1)}.mat')
+    mTA_CL1 = MatlabTA(CL1)
+    mTA_CL2 = MatlabTA(CL2)
+
+    """
+    Control loops and network
+    """
+    from ControlLoop import ControlLoop
+    from Network import Network
+    from ta import NTA
+
+    # add the contraints as used the control loops in Dieky's work
+    cl1 = ControlLoop(mTA_CL1, f'cl1', initial_location=[1])
+    # create a second loop form the same system with a different initial location
+    cl2 = ControlLoop(mTA_CL2, f'cl2', initial_location=[20])
+
+    # create a network as described by Dieky
+    net = Network(1, 5)  # the network is 0.005/0.001 seconds active
+
+    # Use the auto-layout function to create a graph that's humanly readable
+    # this uses "dot" and is slow for really large graphs. If you don't care about readability, skip this
+    cl1.template.layout(auto_nails=True)
+    cl2.template.layout(auto_nails=True)
+    net.template.layout(auto_nails=True)
+
+    # NOTE: To be more specific, this could be described with a NTGA.
+    # Uppaal doesn't care as long as edges are marked controllable or uncontrollable.
+    # Combine the two control loops and the network into a NT(G)A, and add the declaration of earlier update parameter
+    ntga = NTA(cl1, cl2, net)
+    ntga.template.declaration = f'{ntga.template.declaration}\nint EarNum;\nconst int EarMax = 4;'
+    ntgas.append(ntga)
+
 for j in range(20):
     run = shortuuid.uuid()[:4]
     for i in range(10):
-        """
-        Abstractions
-        """
-        from ta import MatlabAbstraction, MatlabTA
-        # Import the abstractions made in matlab and parse into a timed automaton
-        CL1 = MatlabAbstraction(f'data/CL1_M_{20*(i+1)}.mat')
-        CL2 = MatlabAbstraction(f'data/CL2_M_{20*(i+1)}.mat')
-        mTA_CL1 = MatlabTA(CL1)
-        mTA_CL2 = MatlabTA(CL2)
-
-        """
-        Control loops and network
-        """
-        from ControlLoop import ControlLoop
-        from Network import Network
-        from ta import NTA
-
-        # add the contraints as used the control loops in Dieky's work
-        cl1 = ControlLoop(mTA_CL1, f'cl1', initial_location=[1])
-        # create a second loop form the same system with a different initial location
-        cl2 = ControlLoop(mTA_CL2, f'cl2', initial_location=[20])
-
-        # create a network as described by Dieky
-        net = Network(1, 5) # the network is 0.005/0.001 seconds active
-
-        # Use the auto-layout function to create a graph that's humanly readable
-        # this uses "dot" and is slow for really large graphs. If you don't care about readability, skip this
-        cl1.template.layout(auto_nails=True)
-        cl2.template.layout(auto_nails=True)
-        net.template.layout(auto_nails=True)
-
-        # NOTE: To be more specific, this could be described with a NTGA.
-        # Uppaal doesn't care as long as edges are marked controllable or uncontrollable.
-        # Combine the two control loops and the network into a NT(G)A, and add the declaration of earlier update parameter
-        ntga = NTA(cl1, cl2, net)
-        ntga.template.declaration = f'{ntga.template.declaration}\nint EarNum;\nconst int EarMax = 4;'
-
+        ntga = ntgas[i]
         """
         Create Strategy
         """
