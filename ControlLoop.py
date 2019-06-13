@@ -31,7 +31,6 @@ class ControlLoop(TGA):
         # self.invariants.update({location: 'urgent' for location in early.keys()})
 
         # Add edge from Ri to Eari
-        # TODO: add guard from MIET to tau_min (use tolerance better)
         self.edges.update([(f'R{location}', f'{nta.abstraction.limits[location][0]-5}>=c &&'
                                             f'5 <= c && EarNum < EarMax', False, False, frozenset(),
                             f'Ear{location}')
