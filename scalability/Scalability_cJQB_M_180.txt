@@ -1,0 +1,17 @@
+Scalability_cJQB_M_180
+Options for the verification:
+  Generating no trace
+  Search order is breadth first
+  Using conservative space optimisation
+  Seed is 1560100746
+  State space representation uses minimal constraint systems
+  Using HashMap + Compress integers for discrete state storage
+
+Verifying formula 1 at scalability/Scalability_cJQB_M_180.q:1
+ -- Formula is satisfied.
+$v_gameInfoPlay -- States stored : 187363 states
+ -- States explored : 0 states
+ -- CPU user time used : 11189440 ms
+ -- Virtual memory used : 1025784 KiB
+ -- Resident memory used : 979728 KiB
+Printed 1 strategies to scalability

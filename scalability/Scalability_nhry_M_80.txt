@@ -1,0 +1,17 @@
+Scalability_nhry_M_80
+Options for the verification:
+  Generating no trace
+  Search order is breadth first
+  Using conservative space optimisation
+  Seed is 1559899557
+  State space representation uses minimal constraint systems
+  Using HashMap + Compress integers for discrete state storage
+
+Verifying formula 1 at scalability/Scalability_nhry_M_80.q:1
+ -- Formula is satisfied.
+$v_gameInfoPlay -- States stored : 43195 states
+ -- States explored : 0 states
+ -- CPU user time used : 500850 ms
+ -- Virtual memory used : 208480 KiB
+ -- Resident memory used : 163148 KiB
+Printed 1 strategies to scalability

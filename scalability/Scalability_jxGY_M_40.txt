@@ -1,0 +1,17 @@
+Scalability_jxGY_M_40
+Options for the verification:
+  Generating no trace
+  Search order is breadth first
+  Using conservative space optimisation
+  Seed is 1559999920
+  State space representation uses minimal constraint systems
+  Using HashMap + Compress integers for discrete state storage
+
+Verifying formula 1 at scalability/Scalability_jxGY_M_40.q:1
+ -- Formula is satisfied.
+$v_gameInfoPlay -- States stored : 25820 states
+ -- States explored : 0 states
+ -- CPU user time used : 40110 ms
+ -- Virtual memory used : 124796 KiB
+ -- Resident memory used : 79124 KiB
+Printed 1 strategies to scalability
