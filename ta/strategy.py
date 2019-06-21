@@ -252,8 +252,3 @@ class parser(NodeVisitor):
     def generic_visit(self, node, visited_children):
         # print(f'skipping {node.expr_name}')
         return visited_children
-
-#
-# with open('strat/test', 'r') as strat:
-#         SV = TiGaParser()
-#         SV.parse(strat.read())

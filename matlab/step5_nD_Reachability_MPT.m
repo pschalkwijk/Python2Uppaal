@@ -23,9 +23,10 @@ q = 2*m^(n-1);
 
 Polyhedra = cell(q,1);
 medpoints = cell(q,1);
-
-figure
-hold on
+if n==3
+    figure
+    hold on
+end
 for i = 1:(q/2) % Loop on regions 
     
     region2D = AllRegions(:,i); % Contains indices for Q-matrices corresponding to the i-th region

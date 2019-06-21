@@ -28,9 +28,9 @@ if N_conv>2
     end
 end
 %%%
-LL = cell(N_conv+1,l);
+LL = cell(N_conv+1,l+1);
 
-for j = 0:l-1                % Increment of each time subdivision-Note: only up to floor(tau_s*l/sigma_bar) matters based on Lemma 6.
+for j = 0:l                % Increment of each time subdivision-Note: only up to floor(tau_s*l/sigma_bar) matters based on Lemma 6.
     
     clear sigma_prime M PI_1 N PI_2 ii
     sigma_prime = j*sigma_bar/l;           % Needed to calculate Mj
@@ -52,7 +52,6 @@ for j = 0:l-1                % Increment of each time subdivision-Note: only up 
                   
     
 end
-
 end
 
 

@@ -4,7 +4,6 @@ import numpy as np
 
 from .timedautomata import timed_automaton
 
-
 @timed_automaton
 class TA:
     """
@@ -174,6 +173,5 @@ class MatlabTA(TA):
         upper_bound = {}
         for location, (lower, upper) in limits.items():
             upper_bound[location] = upper
-        # FIXME: variable set of clocks? immutable, hashable table instead of dict?
         invariants = {location: f"c<={final_step}" for location, final_step in upper_bound.items()}
         return invariants

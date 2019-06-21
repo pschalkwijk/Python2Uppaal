@@ -11,19 +11,18 @@ sigma_prim = sigma_bar/l;
 if tau_s<sigma_bar
  Phi = cell(N_conv+1,floor(tau_s*l/sigma_bar)+1);  
 else
- Phi = cell(N_conv+1,floor(tau_s*l/sigma_bar));
+ Phi = cell(N_conv+1,floor(tau_s*l/sigma_bar)+1);
 end
 
 if tau_s<sigma_bar
-    for j=0:floor(tau_s*l/sigma_bar)     % j in Lemma 6
+    for j=0:floor(tau_s*l/sigma_bar)        % j in Lemma 6                          
         if j<floor(tau_s*l/sigma_bar)
-            Phi{1,j+1} = LL{1,j+1};
+            Phi{1,j+1} = LL{1,j+1}; 
             for w=2:N_conv+1                % w as (i-1) in eq. 15
                 Phi{w,j+1} = Phi{w-1,j+1}+sigma_prim^(w-1)*LL{w,j+1};
             end
-
         else
-            Phi{1,j+1} = LL{1,j+1};
+            Phi{1,j+1} = LL{1,j+1}; 
             for w=2:N_conv+1                % w as (i-1) in eq. 15
                 Phi{w,j+1} = Phi{w-1,j+1}+(tau_s-j*sigma_prim)^(w-1)*LL{w,j+1};
             end
@@ -31,15 +30,24 @@ if tau_s<sigma_bar
 
     end
 else
-    for j=0:(floor(tau_s*l/sigma_bar)-1)    % Note the difference with the above j-counter
+    for j=0:(floor(tau_s*l/sigma_bar))    % Note the difference with the above j-counter
         Phi{1,j+1} = LL{1,j+1}; 
-        for w=2:N_conv+1
-%             sigma_prim^(w-1)% w as (i-1) in eq. 15
+        for w=2:N_conv+1                    % w as (i-1) in eq. 15
             Phi{w,j+1} = Phi{w-1,j+1}+sigma_prim^(w-1)*LL{w,j+1};
         end
     end
 end
+
 end
+
+
+
+
+
+
+
+
+
 
 
 

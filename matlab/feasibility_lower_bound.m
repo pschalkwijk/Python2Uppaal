@@ -1,35 +1,10 @@
 function feas = feasibility_lower_bound(tau, l, sigma, N, n, L, Q, region, ops, tol, nu, m, f)
-
-% Phi = Phi_fun_etc(tau, l, sigma, N, L);
-% % disp(size(Phi));
-% e = sdpvar((n-1),(N+1));
-% feas = 1;
-% for y = 0:1
-%     disp(y);
-%     for z = 1:N
-%         inEq = 0;
-%         Con_e = [];
-%         for i = 1:(n-1)
-%             index_Qfound = region(i,1);
-%             if index_Qfound > m
-%                 index_Qfound = index_Qfound - m;
-%             end
-%             Q_2D = Q(index_Qfound,1);
-%             Q_nD = zeros(n,n);
-%             Q_nD(i:i+1,i:i+1) = Q_2D{:,:};
-%             inEq = inEq + e(i,z)*Q_nD;
-%             Con_e = [Con_e, e(:,z)>=tol, (Phi{z,end-y}+nu*eye(n)+inEq)<=-10^(-5)];
-%         end
-%     end
-%     solution = solvesdp(Con_e, [], ops);
-%     feas = feas + solution.problem;
-% end
 % Region increment
-Phi = Phi_fun_etc(tau,l,4*sigma,N,L);
+Phi = Phi_fun_etc(tau,l,sigma,N,L);
 %         clear con_break
 con_break = 0;                        % Loop break condition
 if f==1
-    for y=0:floor(tau*l/sigma_bar)
+    for y=0:floor(tau*l/sigma)
         % increment in each row of Phi
         for z=1:N+1                   
             % increment in each column of Phi
@@ -103,12 +78,9 @@ else
             for i = 1:(n-1)
                 inEq = inEq + e(i)*Q_LMI{i,1}; % Build up LMI from combination of 2D Q-matrices and scalars e(psilon)
             end                            
-
             Con_e = [e(:)>=tol, (Phi{z,y+1}+nu*eye(n)+inEq)<=-10^(-5)];
             diag_sol = solvesdp(Con_e,[],ops);                   
             e_ks = double(e);
-            %epsilon_lower = [epsilon_lower, double(e)];
-
             if diag_sol.problem ~= 0
                 con_break = 1;
                 yalmiperror(diag_sol.problem);
