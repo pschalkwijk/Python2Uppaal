@@ -28,7 +28,6 @@ Control loops and network
 from ControlLoop import ControlLoop
 from Network import Network
 from ta import NTA
-
 # add the contraints as used the control loops in Dieky's work
 cl1 = ControlLoop(mTA_CL1, f'cl1', initial_location=[1])
 # create a second loop form the same system with a different initial location
