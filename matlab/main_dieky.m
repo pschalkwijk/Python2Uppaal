@@ -95,9 +95,11 @@ x_0 = [1; 100];
 tic
 step1_etc
 global nu
+ctime = toc;
+fprintf('finished step 1 after %02.0f:%02.0f:%02.0f\n', [floor(ctime/3600), floor(mod(ctime, 3600)/60), round(mod(ctime, 60))]);
 step2_Nu_etc
 ctime = toc;
-fprintf('finished step 1&2 after %02.0f:%02.0f:%02.0f\n', [floor(ctime/3600), floor(mod(ctime, 3600)/60), round(mod(ctime, 60))]);
+fprintf('finished step 2 after %02.0f:%02.0f:%02.0f\n', [floor(ctime/3600), floor(mod(ctime, 3600)/60), round(mod(ctime, 60))]);
 %%
 fprintf('tau_opt = %02.3f\n', tau_opt_nu)
 Tau_s_opt = step3_nD_Q_etc_lowerbounds(m, sigma_bar, l, N_conv, ...
@@ -128,11 +130,15 @@ reachability_calculation_time = toc;
 % Give time that the inter-sample time bound calculations took to complete in seconds
 fprintf('finished reachability analysis after %02.0f:%02.0f:%02.0f\n', [floor(ctime/3600), floor(mod(ctime, 3600)/60), round(mod(ctime, 60))]);
 
-% save(['Dieky1_',datestr(now,"dd/mm/yyyy")])
-% Run simulation
+plot_transition_table
+
+%% Run simulation
 fig_Sim_Q_etc
 
-% Plot results
+%% Plot results
 plot_figures
+
+%% Save data
+save("abstraction")
 
 

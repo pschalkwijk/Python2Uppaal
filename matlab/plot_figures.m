@@ -37,8 +37,11 @@ plot((1:size(trig_time,2)),Min_reg_seq,'k-',(1:size(trig_time,2)),Max_reg_seq,'r
 % SIMULATION
 figure
 hold on
-plot((0:ts:time_end-ts),x_resp(1,:),'b')
-plot((0:ts:time_end-ts),x_resp(2,:),'r')
+
+colors = ['b','r','k','g'];
+for plotter = 1:n
+plot((0:ts:time_end-ts),x_resp(plotter,:),colors(plotter))
+end
 % plot((0:ts:time_end-ts),x_resp(3,:),'k')
 %plot((0:ts:time_end-ts),x_resp(4,:),'g')
 
@@ -101,21 +104,4 @@ end
 
 % Number of impossible transitions (should be zero)
 impossible_transitions
-
-%% PLOT ALL POSSIBLE REGION TRANSITIONS
-figure
-%title('Possible region transitions')
-xlabel('From region','interpreter','latex')
-ylabel('To region','interpreter','latex')
-set(gca,'fontsize',24);
-
-hold on
- for k = 1:q
-     
-    for c = 1:(size(Reachable_regions_regDetQ{k,1},2))
-        region_to = Reachable_regions_regDetQ{k,1}(c);
-        plot(k,region_to,'k*')
-    end
-     
- end
  

@@ -8,11 +8,11 @@ The main.m file contains all parameters to describe a system and find the abstra
 
 Changes w.r.t. C. Hop's code:
 
-- Implemented a golden section search to find the lower and upper bounds on triggering time per section
+- Implemented a bisection search to find the lower and upper bounds on triggering time per section
 - The bounds and reachability analysis are done in a function and using a parallel loop to speed up the process.
 - The result is saved to a .mat file automatically
 
-In the ta folder, a python implementation of timed automata and the abstractions is found.
+In the *python* folder, a python implementation of timed automata and the abstractions is found.
 The abstractions can be created using ETCTime by G.Gleizer or by loading a .mat file as saved by the matlab code
 
 To recreate the network and control loop as in the paper mentioned above, the ControlLoop and Network class are implemented
@@ -33,5 +33,4 @@ Currently it:
  
 NOTE:
 - I'm using uppaal stratego 4.1.20-5 for linux, and finding a strategy can (and probably will) take a lot of time and memory.
-- The matlab code is not optimised in any other way than adding a GSS instead of increasing along the line to find the bounds.
-- This is a work in progress, I will try to improve code readability along the way.
+- The matlab code is not optimised in any other way than adding a BSS instead of increasing along the line to find the bounds and adding some paralellisation. 
