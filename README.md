@@ -33,4 +33,5 @@ Currently it:
  
 NOTE:
 - I'm using uppaal stratego 4.1.20-5 for linux, and finding a strategy can (and probably will) take a lot of time and memory.
+- Uppaal Stratego can be found at http://people.cs.aau.dk/~marius/stratego/download.html
 - The matlab code is not optimised in any other way than adding a BSS instead of increasing along the line to find the bounds and adding some paralellisation. 
