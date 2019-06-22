@@ -12,8 +12,8 @@ VERIFYTA = "/home/pschalkwijk/Documents/uppaal/bin-Linux/verifyta.sh"
 shortuuid.set_alphabet("ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz")
 
 from ta import MatlabAbstraction, MatlabTA
-CL1_M_20 = MatlabAbstraction('data/CL1_M_8.mat')
-CL2_M_20 = MatlabAbstraction('data/CL2_M_8.mat')
+CL1_M_20 = MatlabAbstraction('../data/CL1_M_20.mat')
+CL2_M_20 = MatlabAbstraction('../data/CL2_M_20.mat')
 mTA_CL1 = MatlabTA(CL1_M_20)
 mTA_CL2 = MatlabTA(CL2_M_20)
 
