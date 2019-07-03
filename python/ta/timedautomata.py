@@ -436,7 +436,16 @@ class NTGA:
 
 @timed_automaton
 class PTA:
-    pass
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.price = dict()
+
+
+@timed_game_automaton
+class PTGA:
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.price = dict()
 
 
 @timed_game_automaton
